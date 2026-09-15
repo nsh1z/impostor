@@ -59,8 +59,8 @@ export default function HowToPlayModal({ isOpen, onClose }) {
                   <h3 className="text-xs font-bold text-white uppercase tracking-wide">Asignación Confidencial</h3>
                 </div>
                 <p className="text-xs text-white/70 leading-relaxed">
-                  Todos los inocentes reciben al <strong>mismo futbolista secreto</strong> (con club, país y posición). 
-                  El <strong>Impostor</strong> no conoce el nombre, pero <strong>siempre recibe una pista táctica confidencial</strong> (posición, época o logro) para poder camuflarse.
+                  Todos los inocentes reciben únicamente el <strong>nombre del futbolista secreto</strong> (sin ningún otro dato). 
+                  El <strong>Impostor</strong> no conoce el nombre, pero <strong>recibe una pista corta y secreta</strong> para deducir quién es y camuflarse en la conversación.
                 </p>
               </div>
             </div>

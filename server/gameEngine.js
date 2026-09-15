@@ -589,21 +589,23 @@ export class GameEngine {
 
     if (room.state !== 'LOBBY') {
       if (room.state === 'GAME_OVER') {
-        // En GAME_OVER todos ven todo
+        // En GAME_OVER todos ven el nombre
         role = isImpostor ? 'IMPOSTOR' : 'INNOCENT';
-        secretPlayer = room.secretPlayer;
-        impostorHint = room.secretPlayer?.impostorHint || null;
+        secretPlayer = room.secretPlayer ? { name: room.secretPlayer.name } : null;
+        // Solo el impostor tiene la pista
+        impostorHint = isImpostor ? (room.secretPlayer?.hint || null) : null;
       } else {
         // Durante la partida: SEGURIDAD CRIPTO-GRÁFICA
         if (isImpostor) {
           role = 'IMPOSTOR';
-          secretPlayer = null; // ¡NUNCA se envía al impostor!
-          // SIEMPRE dar pista táctica al impostor para que pueda participar y deducir
-          impostorHint = room.secretPlayer?.impostorHint || 'Pista de campo confidencial';
+          secretPlayer = null; // El impostor NO recibe el nombre
+          // SOLO EL IMPOSTOR TIENE LA PISTA: PISTA COMPLICADA Y CULTURAL
+          impostorHint = room.secretPlayer?.hint || null;
         } else {
           role = 'INNOCENT';
-          secretPlayer = room.secretPlayer; // Los inocentes conocen al futbolista
-          impostorHint = null;
+          // SOLO EL NOMBRE: NINGÚN DATO ADICIONAL A NADIE
+          secretPlayer = { name: room.secretPlayer.name };
+          impostorHint = null; // Inocentes NO tienen la pista
         }
       }
     }

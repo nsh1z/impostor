@@ -82,16 +82,27 @@ async function runTest() {
   }
   console.log('[OK] El impostor NO tiene acceso al jugador secreto (secretPlayer es null)');
 
-  // VERIFICAR QUE EL IMPOSTOR SIEMPRE RECIBE PISTA
-  if (!impostorState.impostorHint || impostorState.impostorHint.length < 5) {
-    throw new Error('FALLO DE REGLA: El impostor DEBE recibir siempre una pista táctica (impostorHint)');
+  // VERIFICAR QUE EL IMPOSTOR RECIBE PISTA CORTA Y CONCISA
+  if (typeof impostorState.impostorHint !== 'string' || impostorState.impostorHint.length < 2 || impostorState.impostorHint.length > 35) {
+    throw new Error(`FALLO DE REGLA: El impostor DEBE recibir una pista corta y concisa. Recibido: ${impostorState.impostorHint}`);
   }
-  console.log(`[OK] El impostor SIEMPRE recibe pista táctica: "${impostorState.impostorHint}"`);
+  console.log(`[OK] El impostor recibe pista corta y concisa: "${impostorState.impostorHint}"`);
 
-  if (!innocentStates[0].secretPlayer || !innocentStates[0].secretPlayer.name) {
-    throw new Error('Los inocentes deberían conocer el jugador secreto');
+  // VERIFICAR QUE LOS INOCENTES NO RECIBEN NINGUNA PISTA
+  if (innocentStates[0].impostorHint !== null) {
+    throw new Error('FALLO DE SEGURIDAD: Los inocentes NO deben recibir ninguna pista');
   }
-  console.log(`[OK] Inocentes conocen al futbolista: ${innocentStates[0].secretPlayer.name}`);
+  console.log('[OK] Los inocentes NO reciben la pista del impostor (es null)');
+
+  // VERIFICAR QUE LOS INOCENTES RECIBEN ÚNICAMENTE EL NOMBRE Y NINGÚN OTRO DATO
+  const innocentSecret = innocentStates[0].secretPlayer;
+  if (!innocentSecret || !innocentSecret.name) {
+    throw new Error('Los inocentes deberían conocer el nombre del futbolista secreto');
+  }
+  if (innocentSecret.country || innocentSecret.position || innocentSecret.iconicClub || innocentSecret.hints) {
+    throw new Error('FALLO DE REGLA: No se deben dar más datos a nadie aparte del nombre');
+  }
+  console.log(`[OK] Inocentes conocen estrictamente el nombre: "${innocentSecret.name}" (sin datos extra)`);
 
   // 5. Los jugadores confirman listos
   c1.emit('role_ready');

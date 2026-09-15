@@ -59,12 +59,8 @@ export default function ImpostorGuessModal({ gameState, onSubmitGuess }) {
   const filteredPlayers = playersList.filter(p => {
     if (!searchTerm.trim()) return true;
     const term = searchTerm.toLowerCase();
-    return (
-      p.name.toLowerCase().includes(term) ||
-      p.country.toLowerCase().includes(term) ||
-      p.iconicClub.toLowerCase().includes(term)
-    );
-  }).slice(0, 12);
+    return p.name.toLowerCase().includes(term);
+  }).slice(0, 14);
 
   return (
     <div className="min-h-[100dvh] flex flex-col items-center justify-center px-4 py-20 relative select-none">
@@ -110,14 +106,14 @@ export default function ImpostorGuessModal({ gameState, onSubmitGuess }) {
             <div className="bezel-inner p-5 sm:p-6 space-y-4">
               {/* PISTA TÁCTICA RECORDATORIO PARA EL IMPOSTOR */}
               {impostorHint && (
-                <div className="p-3.5 rounded-2xl bg-amber-500/10 ring-1 ring-amber-400/30 flex items-start gap-2.5 text-xs text-amber-200">
-                  <FontAwesomeIcon icon={faLightbulb} className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
-                  <div>
-                    <span className="font-mono-sport font-black uppercase text-amber-400 text-[10px] tracking-widest block">
-                      Recuerda tu Pista Táctica:
+                <div className="p-3 rounded-2xl bg-amber-500/10 ring-1 ring-amber-400/30 flex items-center justify-between text-xs text-amber-200">
+                  <div className="flex items-center gap-2">
+                    <FontAwesomeIcon icon={faLightbulb} className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                    <span className="font-mono-sport font-black uppercase text-amber-400 text-[10px] tracking-widest">
+                      Tu Pista Confidencial:
                     </span>
-                    <span className="font-semibold text-white">{impostorHint}</span>
                   </div>
+                  <span className="font-heading font-black text-base sm:text-lg text-amber-300 uppercase tracking-wide">{impostorHint}</span>
                 </div>
               )}
 
@@ -160,10 +156,7 @@ export default function ImpostorGuessModal({ gameState, onSubmitGuess }) {
                             : 'bg-white/[0.02] ring-white/5 hover:bg-white/5 text-white/80'
                         }`}
                       >
-                        <div>
-                          <div className="text-xs font-bold">{p.name}</div>
-                          <div className="text-[10px] text-white/40 font-mono-sport">{p.country} • {p.iconicClub}</div>
-                        </div>
+                        <div className="text-xs font-bold">{p.name}</div>
                         {isSelected && (
                           <FontAwesomeIcon icon={faCheck} className="w-3 h-3 text-amber-400" />
                         )}

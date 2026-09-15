@@ -111,24 +111,16 @@ export default function GameOver({ gameState, onRematch }) {
                   <span className="text-[9px] uppercase font-mono-sport font-black text-[#00ff88] tracking-widest">
                     FUTBOLISTA SECRETO
                   </span>
-                  <span className="px-2 py-0.5 rounded text-[10px] font-mono-sport bg-white/10 text-white/70">
-                    {secretPlayer?.era}
-                  </span>
+                  <FontAwesomeIcon icon={faFutbol} className="w-3.5 h-3.5 text-[#00ff88]" />
                 </div>
-                <h3 className="text-lg font-heading font-black text-white">
-                  {secretPlayer?.name}
+                <h3 className="text-xl sm:text-2xl font-heading font-black text-white">
+                  {secretPlayer?.name || 'Futbolista'}
                 </h3>
-                <div className="text-xs text-white/60 mt-1 space-y-0.5 font-mono-sport text-[11px]">
-                  <p>{secretPlayer?.country} • {secretPlayer?.position}</p>
-                  <p className="text-[#00ff88] font-medium">{secretPlayer?.iconicClub}</p>
-                </div>
               </div>
 
-              {secretPlayer?.hints && secretPlayer.hints[0] && (
-                <div className="mt-3 pt-2.5 border-t border-white/5 text-[11px] text-white/50 italic leading-relaxed">
-                  "{secretPlayer.hints[0]}"
-                </div>
-              )}
+              <div className="mt-4 pt-2.5 border-t border-white/5 text-[10px] font-mono-sport uppercase tracking-wider text-white/40">
+                Identidad oficial del partido
+              </div>
             </div>
           </div>
 

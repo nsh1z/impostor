@@ -376,17 +376,20 @@ export class ServerlessEngine {
     if (this.room.state !== 'LOBBY') {
       if (this.room.state === 'GAME_OVER') {
         role = isImpostor ? 'IMPOSTOR' : 'INNOCENT';
-        secretPlayer = this.room.secretPlayer;
-        impostorHint = this.room.secretPlayer?.impostorHint || null;
+        secretPlayer = this.room.secretPlayer ? { name: this.room.secretPlayer.name } : null;
+        // Solo el impostor tiene la pista
+        impostorHint = isImpostor ? (this.room.secretPlayer?.hint || null) : null;
       } else {
         if (isImpostor) {
           role = 'IMPOSTOR';
           secretPlayer = null; // Criptoseguro: el impostor NO recibe el nombre
-          impostorHint = this.room.secretPlayer?.impostorHint || 'Pista de campo confidencial';
+          // SOLO EL IMPOSTOR TIENE LA PISTA: PISTA COMPLICADA Y CULTURAL
+          impostorHint = this.room.secretPlayer?.hint || null;
         } else {
           role = 'INNOCENT';
-          secretPlayer = this.room.secretPlayer;
-          impostorHint = null;
+          // SOLO EL NOMBRE: NINGÚN DATO ADICIONAL A NADIE
+          secretPlayer = { name: this.room.secretPlayer.name };
+          impostorHint = null; // Inocentes NO tienen la pista
         }
       }
     }

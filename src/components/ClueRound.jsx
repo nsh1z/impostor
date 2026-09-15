@@ -118,11 +118,16 @@ export default function ClueRound({ gameState, onSubmitClue, onSkipTurn }) {
                   <div className="flex items-center gap-2 text-red-400 font-semibold">
                     <FontAwesomeIcon icon={faUserSecret} className="w-3.5 h-3.5" />
                     <span>Eres el Impostor</span>
+                    {impostorHint && (
+                      <span className="ml-1 px-2 py-0.5 rounded bg-amber-400/20 text-amber-400 font-mono-sport text-[11px] font-black">
+                        Pista: {impostorHint}
+                      </span>
+                    )}
                   </div>
                 ) : (
                   <div className="flex items-center gap-2 text-[#00ff88] font-semibold">
                     <FontAwesomeIcon icon={faShieldHalved} className="w-3.5 h-3.5" />
-                    <span>Futbolista: {secretPlayer?.name} ({secretPlayer?.country})</span>
+                    <span>Futbolista: {secretPlayer?.name}</span>
                   </div>
                 )}
               </div>
@@ -150,14 +155,14 @@ export default function ClueRound({ gameState, onSubmitClue, onSkipTurn }) {
             <div className="bezel-inner p-5 sm:p-6 space-y-3.5">
               {/* PISTA TÁCTICA DE APOYO SIEMPRE PRESENTE PARA EL IMPOSTOR */}
               {isImpostor && impostorHint && (
-                <div className="p-3.5 rounded-2xl bg-amber-500/10 ring-1 ring-amber-400/30 flex items-start gap-2.5 text-xs text-amber-200">
-                  <FontAwesomeIcon icon={faLightbulb} className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
-                  <div>
-                    <span className="font-mono-sport font-black uppercase text-amber-400 text-[10px] tracking-widest block">
-                      Tu Pista Táctica de Respaldo:
+                <div className="p-3 rounded-2xl bg-amber-500/10 ring-1 ring-amber-400/30 flex items-center justify-between text-xs text-amber-200">
+                  <div className="flex items-center gap-2">
+                    <FontAwesomeIcon icon={faLightbulb} className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                    <span className="font-mono-sport font-black uppercase text-amber-400 text-[10px] tracking-widest">
+                      Tu Pista Confidencial:
                     </span>
-                    <span className="font-semibold text-white">{impostorHint}</span>
                   </div>
+                  <span className="font-heading font-black text-base sm:text-lg text-amber-300 uppercase tracking-wide">{impostorHint}</span>
                 </div>
               )}
 

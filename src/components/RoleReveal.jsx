@@ -103,8 +103,8 @@ export default function RoleReveal({ gameState, onReady, onForceStart }) {
                 </div>
               </div>
             ) : isImpostor ? (
-              // Estado Revelado: IMPOSTOR (CON PISTA TÁCTICA OBLIGATORIA)
-              <div className="space-y-4 flex flex-col items-center animate-fade-in w-full">
+              // Estado Revelado: IMPOSTOR (SOLO UNA SOLA LETRA COMO PISTA)
+              <div className="space-y-5 flex flex-col items-center animate-fade-in w-full">
                 <div className="w-14 h-14 rounded-2xl bg-red-500/20 ring-1 ring-red-500/50 flex items-center justify-center text-red-400 shadow-[0_0_25px_rgba(239,68,68,0.35)]">
                   <FontAwesomeIcon icon={faUserSecret} className="w-7 h-7" />
                 </div>
@@ -118,17 +118,19 @@ export default function RoleReveal({ gameState, onReady, onForceStart }) {
                   </h2>
                 </div>
 
-                {/* PISTA CONFIDENCIAL EXCLUSIVA PARA EL IMPOSTOR */}
-                <div className="w-full p-4 rounded-2xl bg-black/60 ring-1 ring-amber-400/40 text-left space-y-2">
-                  <div className="flex items-center gap-2 text-amber-400 font-mono-sport text-[10px] uppercase tracking-widest font-black">
-                    <FontAwesomeIcon icon={faLightbulb} className="w-3 h-3" />
-                    <span>Tu Pista Táctica de Respaldo</span>
+                {/* PISTA CONFIDENCIAL TÁCTICA PARA EL IMPOSTOR */}
+                <div className="w-full p-5 sm:p-6 rounded-2xl bg-black/70 ring-1 ring-amber-400/40 text-center space-y-2">
+                  <div className="flex items-center justify-center gap-2 text-amber-400 font-mono-sport text-[10px] uppercase tracking-widest font-black">
+                    <FontAwesomeIcon icon={faLightbulb} className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Tu Pista Secreta</span>
                   </div>
-                  <p className="text-xs font-bold text-white leading-relaxed">
-                    {impostorHint || 'Futbolista internacional de primer nivel'}
-                  </p>
-                  <p className="text-[11px] text-white/50 leading-relaxed pt-1 border-t border-white/5">
-                    Usa esta pista para hablar con naturalidad sin delatarte. Escucha las pistas de los demás para adivinar el nombre exacto.
+                  <div className="py-3 px-4 rounded-xl bg-amber-500/10 ring-1 ring-amber-400/20">
+                    <span className="text-2xl sm:text-3xl font-heading font-black text-amber-300 tracking-wide uppercase">
+                      {impostorHint || '?'}
+                    </span>
+                  </div>
+                  <p className="text-[10px] font-mono-sport text-white/40 tracking-wider uppercase">
+                    Pista exclusiva para deducir al futbolista sin delatarte
                   </p>
                 </div>
 
@@ -138,45 +140,23 @@ export default function RoleReveal({ gameState, onReady, onForceStart }) {
                 </div>
               </div>
             ) : (
-              // Estado Revelado: INOCENTE
-              <div className="space-y-4 flex flex-col items-center animate-fade-in w-full">
+              // Estado Revelado: INOCENTE (SOLO EL NOMBRE, NINGÚN OTRO DATO)
+              <div className="space-y-5 flex flex-col items-center animate-fade-in w-full">
                 <div className="w-14 h-14 rounded-2xl bg-[#00ff88]/20 ring-1 ring-[#00ff88]/50 flex items-center justify-center text-[#00ff88] shadow-[0_0_25px_rgba(0,255,136,0.3)]">
                   <FontAwesomeIcon icon={faShieldHalved} className="w-7 h-7" />
                 </div>
 
-                <div>
+                <div className="space-y-2">
                   <span className="px-2.5 py-0.5 rounded-full bg-[#00ff88]/20 ring-1 ring-[#00ff88]/40 text-[10px] font-mono-sport font-black uppercase text-[#00ff88] tracking-wider">
-                    JUGADOR ASIGNADO
+                    FUTBOLISTA SECRETO
                   </span>
-                  <h2 className="text-2xl sm:text-3xl font-heading font-black text-white uppercase tracking-wide mt-1.5">
+                  <h2 className="text-3xl sm:text-4xl font-heading font-black text-white uppercase tracking-wide">
                     {player?.name}
                   </h2>
-                  <div className="flex flex-wrap items-center justify-center gap-1.5 mt-2">
-                    <span className="px-2 py-0.5 rounded-md bg-white/10 text-xs font-semibold text-white/90">
-                      {player?.country}
-                    </span>
-                    <span className="px-2 py-0.5 rounded-md bg-white/10 text-xs font-semibold text-white/90">
-                      {player?.position}
-                    </span>
-                    <span className="px-2 py-0.5 rounded-md bg-white/10 text-xs font-semibold text-[#00ff88]">
-                      {player?.iconicClub}
-                    </span>
-                  </div>
+                  <p className="text-xs text-white/40 font-mono-sport uppercase tracking-widest pt-1">
+                    Solo tú y tu equipo conocen el nombre
+                  </p>
                 </div>
-
-                {/* Datos de apoyo para formular pistas */}
-                {player?.hints && player.hints.length > 0 && (
-                  <div className="p-3.5 rounded-2xl bg-black/50 ring-1 ring-[#00ff88]/30 text-xs text-white/80 text-left space-y-1.5 w-full">
-                    <span className="text-[10px] font-mono-sport uppercase font-black text-[#00ff88] tracking-widest block">
-                      Datos Clave para tu Pista:
-                    </span>
-                    <ul className="list-disc list-inside space-y-1 text-white/70 text-[11px]">
-                      {player.hints.map((h, i) => (
-                        <li key={i}>{h}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
 
                 <div className="inline-flex items-center gap-1.5 text-[10px] font-mono-sport uppercase tracking-widest text-white/30">
                   <FontAwesomeIcon icon={faEyeSlash} className="w-2.5 h-2.5" />
