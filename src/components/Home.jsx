@@ -86,21 +86,6 @@ export default function Home({ onCreateRoom, onJoinRoom, onOpenHelp, errorMsg, i
         <p className="text-xs sm:text-sm text-white/60 mt-3 font-normal max-w-sm mx-auto leading-relaxed">
           Descubre quién no pertenece al vestuario antes de que deduzca al futbolista secreto.
         </p>
-
-        {/* Alerta si el socket no está conectado aún */}
-        {!isConnected && (
-          <div className="mt-3 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 ring-1 ring-amber-500/30 text-[11px] text-amber-300 font-mono-sport animate-pulse">
-            <span className="w-2 h-2 rounded-full bg-amber-400" />
-            <span>Conectando con el servidor en puerto 3000...</span>
-            <button
-              type="button"
-              onClick={handleManualReconnect}
-              className="ml-1 underline hover:text-white"
-            >
-              Reintentar
-            </button>
-          </div>
-        )}
       </div>
 
       {/* Contenedor Principal (Doppelrand de Alta Gama) */}

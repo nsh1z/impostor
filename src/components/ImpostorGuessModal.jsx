@@ -9,22 +9,24 @@ import {
   faCheck,
   faBullseye
 } from '@fortawesome/free-solid-svg-icons';
+import { getAllPlayerNames } from '../data/playersData.js';
 import { soundFx } from '../services/soundFx';
 
 export default function ImpostorGuessModal({ gameState, onSubmitGuess }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedName, setSelectedName] = useState('');
-  const [playersList, setPlayersList] = useState([]);
+  const [playersList, setPlayersList] = useState(() => getAllPlayerNames());
   const [timeLeft, setTimeLeft] = useState(gameState?.guessTimeLeft || 30);
 
   const isImpostor = gameState?.me?.role === 'IMPOSTOR';
   const impostorHint = gameState?.impostorHint;
 
   useEffect(() => {
+    // Si hay backend disponible, refrescar lista
     fetch('/api/players')
       .then(res => res.json())
-      .then(data => setPlayersList(data))
-      .catch(err => console.error('Error al cargar lista de futbolistas:', err));
+      .then(data => { if (Array.isArray(data) && data.length > 0) setPlayersList(data); })
+      .catch(() => {});
   }, []);
 
   useEffect(() => {

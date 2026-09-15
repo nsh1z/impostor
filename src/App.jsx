@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { socket } from './services/socket';
-import { soundFx } from './services/soundFx';
+import { network } from './services/network';
 import Navbar from './components/Navbar';
 import Home from './components/Home';
 import Lobby from './components/Lobby';
@@ -16,70 +15,38 @@ export default function App() {
   const [gameState, setGameState] = useState(null);
   const [errorMsg, setErrorMsg] = useState('');
   const [showHelp, setShowHelp] = useState(false);
-  const [isConnected, setIsConnected] = useState(socket.connected);
+  const [isConnected, setIsConnected] = useState(network.isConnected());
 
   useEffect(() => {
     const handleConnect = () => {
-      console.log('[App] Conectado al servidor WebSocket');
       setIsConnected(true);
       setErrorMsg('');
     };
 
-    const handleDisconnect = (reason) => {
-      console.log('[App] Desconectado del servidor WebSocket:', reason);
-      setIsConnected(false);
-    };
-
-    const handleConnectError = (err) => {
-      console.warn('[App] Error de conexión Socket:', err);
+    const handleDisconnect = () => {
       setIsConnected(false);
     };
 
     const handleGameState = (state) => {
-      console.log('[App] Estado de juego recibido:', state?.state);
       setGameState(state);
     };
 
-    socket.on('connect', handleConnect);
-    socket.on('disconnect', handleDisconnect);
-    socket.on('connect_error', handleConnectError);
-    socket.on('game_state', handleGameState);
-
-    if (socket.connected) {
-      setIsConnected(true);
-    }
+    network.on('connect', handleConnect);
+    network.on('disconnect', handleDisconnect);
+    network.on('game_state', handleGameState);
 
     return () => {
-      socket.off('connect', handleConnect);
-      socket.off('disconnect', handleDisconnect);
-      socket.off('connect_error', handleConnectError);
-      socket.off('game_state', handleGameState);
+      network.off('connect', handleConnect);
+      network.off('disconnect', handleDisconnect);
+      network.off('game_state', handleGameState);
     };
   }, []);
 
-  // Acciones de Socket con timeout de seguridad (evita quedar colgado en "Conectando...")
+  // Acciones de juego usando la capa unificada de red (Socket.IO o Serverless P2P)
   const handleCreateRoom = (name, avatar, onDone) => {
     setErrorMsg('');
-
-    if (!socket.connected) {
-      socket.connect();
-    }
-
-    let finished = false;
-    const timeout = setTimeout(() => {
-      if (!finished) {
-        finished = true;
-        if (onDone) onDone();
-        setErrorMsg('El servidor no respondió a tiempo. Verifica que el servidor esté activo en http://localhost:3000.');
-      }
-    }, 4500);
-
-    socket.emit('create_room', { name, avatar }, (res) => {
-      if (finished) return;
-      finished = true;
-      clearTimeout(timeout);
+    network.createRoom(name, avatar, (res) => {
       if (onDone) onDone();
-
       if (res?.error) {
         setErrorMsg(res.error);
       } else if (res?.state) {
@@ -90,26 +57,8 @@ export default function App() {
 
   const handleJoinRoom = (roomCode, name, avatar, onDone) => {
     setErrorMsg('');
-
-    if (!socket.connected) {
-      socket.connect();
-    }
-
-    let finished = false;
-    const timeout = setTimeout(() => {
-      if (!finished) {
-        finished = true;
-        if (onDone) onDone();
-        setErrorMsg('El servidor no respondió a tiempo. Comprueba el código o si el servidor está activo.');
-      }
-    }, 4500);
-
-    socket.emit('join_room', { roomCode, name, avatar }, (res) => {
-      if (finished) return;
-      finished = true;
-      clearTimeout(timeout);
+    network.joinRoom(roomCode, name, avatar, (res) => {
       if (onDone) onDone();
-
       if (res?.error) {
         setErrorMsg(res.error);
       } else if (res?.state) {
@@ -119,16 +68,16 @@ export default function App() {
   };
 
   const handleUpdateProfile = (name, avatar) => {
-    socket.emit('update_profile', { name, avatar });
+    network.emit('update_profile', { name, avatar });
   };
 
   const handleUpdateSettings = (settings) => {
-    socket.emit('update_settings', settings);
+    network.emit('update_settings', settings);
   };
 
   const handleStartGame = () => {
     setErrorMsg('');
-    socket.emit('start_game', (res) => {
+    network.emit('start_game', {}, (res) => {
       if (res?.error) {
         setErrorMsg(res.error);
         alert(res.error);
@@ -137,39 +86,39 @@ export default function App() {
   };
 
   const handleRoleReady = () => {
-    socket.emit('role_ready');
+    network.emit('role_ready');
   };
 
   const handleForceStartClues = () => {
-    socket.emit('force_start_clues');
+    network.emit('force_start_clues');
   };
 
   const handleSubmitClue = (clueText) => {
-    socket.emit('submit_clue', { clueText }, (res) => {
+    network.emit('submit_clue', { clueText }, (res) => {
       if (res?.error) alert(res.error);
     });
   };
 
   const handleSkipTurn = () => {
-    socket.emit('skip_clue_turn');
+    network.emit('skip_clue_turn');
   };
 
   const handleCastVote = (targetPlayerId) => {
-    socket.emit('cast_vote', { targetPlayerId });
+    network.emit('cast_vote', { targetPlayerId });
   };
 
   const handleSubmitImpostorGuess = (guessedName) => {
-    socket.emit('submit_impostor_guess', { guessedName }, (res) => {
+    network.emit('submit_impostor_guess', { guessedName }, (res) => {
       if (res?.error) alert(res.error);
     });
   };
 
   const handleRematch = () => {
-    socket.emit('rematch');
+    network.emit('rematch');
   };
 
   const handleLeaveRoom = () => {
-    socket.emit('leave_room');
+    network.leaveRoom();
     setGameState(null);
   };
 

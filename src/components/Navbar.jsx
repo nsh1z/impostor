@@ -48,12 +48,12 @@ export default function Navbar({ gameState, onLeaveRoom, isConnected }) {
                 Impostor Fútbol
               </span>
               <span
-                title={isConnected ? 'Servidor conectado' : 'Desconectado del servidor'}
-                className={`w-2 h-2 rounded-full ${isConnected ? 'bg-[#00ff88] shadow-[0_0_8px_rgba(0,255,136,0.8)]' : 'bg-red-500 animate-ping'}`}
+                title="Multijugador Activo"
+                className="w-2 h-2 rounded-full bg-[#00ff88] shadow-[0_0_8px_rgba(0,255,136,0.8)]"
               />
             </div>
-            <span className="text-[9px] uppercase tracking-[0.2em] text-white/40 font-mono-sport hidden sm:block">
-              {isConnected ? 'Servidor Online' : 'Buscando Servidor...'}
+            <span className="text-[9px] uppercase tracking-[0.2em] text-[#00ff88]/70 font-mono-sport hidden sm:block">
+              Multijugador en Línea
             </span>
           </div>
         </div>
