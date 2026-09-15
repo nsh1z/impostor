@@ -5,14 +5,14 @@ import {
   faRightToBracket,
   faCircleQuestion,
   faTriangleExclamation,
-  faShieldHalved,
   faFutbol,
-  faArrowRight
+  faRotate
 } from '@fortawesome/free-solid-svg-icons';
 import FootballIcon, { AVATAR_OPTIONS } from './FootballIcon';
 import { soundFx } from '../services/soundFx';
+import { socket } from '../services/socket';
 
-export default function Home({ onCreateRoom, onJoinRoom, onOpenHelp, errorMsg }) {
+export default function Home({ onCreateRoom, onJoinRoom, onOpenHelp, errorMsg, isConnected }) {
   const [tab, setTab] = useState('create'); // 'create' | 'join'
   const [name, setName] = useState(() => localStorage.getItem('impostor_name') || '');
   const [avatar, setAvatar] = useState(() => localStorage.getItem('impostor_avatar') || 'shirt-10');
@@ -32,6 +32,11 @@ export default function Home({ onCreateRoom, onJoinRoom, onOpenHelp, errorMsg })
     if (localError) setLocalError('');
   };
 
+  const handleManualReconnect = () => {
+    soundFx.click();
+    socket.connect();
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     soundFx.click();
@@ -42,16 +47,17 @@ export default function Home({ onCreateRoom, onJoinRoom, onOpenHelp, errorMsg })
       return;
     }
 
+    setLoading(true);
+
     if (tab === 'join') {
       const cleanCode = roomCode.trim().toUpperCase();
       if (!cleanCode || cleanCode.length < 3) {
+        setLoading(false);
         setLocalError('Ingresa un código de sala válido.');
         return;
       }
-      setLoading(true);
       onJoinRoom(cleanCode, trimmedName, avatar, () => setLoading(false));
     } else {
-      setLoading(true);
       onCreateRoom(trimmedName, avatar, () => setLoading(false));
     }
   };
@@ -80,6 +86,21 @@ export default function Home({ onCreateRoom, onJoinRoom, onOpenHelp, errorMsg })
         <p className="text-xs sm:text-sm text-white/60 mt-3 font-normal max-w-sm mx-auto leading-relaxed">
           Descubre quién no pertenece al vestuario antes de que deduzca al futbolista secreto.
         </p>
+
+        {/* Alerta si el socket no está conectado aún */}
+        {!isConnected && (
+          <div className="mt-3 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 ring-1 ring-amber-500/30 text-[11px] text-amber-300 font-mono-sport animate-pulse">
+            <span className="w-2 h-2 rounded-full bg-amber-400" />
+            <span>Conectando con el servidor en puerto 3000...</span>
+            <button
+              type="button"
+              onClick={handleManualReconnect}
+              className="ml-1 underline hover:text-white"
+            >
+              Reintentar
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Contenedor Principal (Doppelrand de Alta Gama) */}
@@ -144,7 +165,7 @@ export default function Home({ onCreateRoom, onJoinRoom, onOpenHelp, errorMsg })
               />
             </div>
 
-            {/* Selector de Avatar Táctico (FontAwesome Badges) */}
+            {/* Selector de Avatar Táctico */}
             <div>
               <label className="block text-[11px] uppercase tracking-[0.15em] text-white/70 font-semibold mb-2 font-mono-sport">
                 Insignia de Jugador

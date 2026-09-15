@@ -16,26 +16,70 @@ export default function App() {
   const [gameState, setGameState] = useState(null);
   const [errorMsg, setErrorMsg] = useState('');
   const [showHelp, setShowHelp] = useState(false);
+  const [isConnected, setIsConnected] = useState(socket.connected);
 
   useEffect(() => {
-    // Escuchar el estado de juego sanitizado del servidor
+    const handleConnect = () => {
+      console.log('[App] Conectado al servidor WebSocket');
+      setIsConnected(true);
+      setErrorMsg('');
+    };
+
+    const handleDisconnect = (reason) => {
+      console.log('[App] Desconectado del servidor WebSocket:', reason);
+      setIsConnected(false);
+    };
+
+    const handleConnectError = (err) => {
+      console.warn('[App] Error de conexión Socket:', err);
+      setIsConnected(false);
+    };
+
     const handleGameState = (state) => {
-      console.log('[Nuevo Estado de Juego recibido]:', state.state);
+      console.log('[App] Estado de juego recibido:', state?.state);
       setGameState(state);
     };
 
+    socket.on('connect', handleConnect);
+    socket.on('disconnect', handleDisconnect);
+    socket.on('connect_error', handleConnectError);
     socket.on('game_state', handleGameState);
 
+    if (socket.connected) {
+      setIsConnected(true);
+    }
+
     return () => {
+      socket.off('connect', handleConnect);
+      socket.off('disconnect', handleDisconnect);
+      socket.off('connect_error', handleConnectError);
       socket.off('game_state', handleGameState);
     };
   }, []);
 
-  // Acciones de Socket
+  // Acciones de Socket con timeout de seguridad (evita quedar colgado en "Conectando...")
   const handleCreateRoom = (name, avatar, onDone) => {
     setErrorMsg('');
+
+    if (!socket.connected) {
+      socket.connect();
+    }
+
+    let finished = false;
+    const timeout = setTimeout(() => {
+      if (!finished) {
+        finished = true;
+        if (onDone) onDone();
+        setErrorMsg('El servidor no respondió a tiempo. Verifica que el servidor esté activo en http://localhost:3000.');
+      }
+    }, 4500);
+
     socket.emit('create_room', { name, avatar }, (res) => {
+      if (finished) return;
+      finished = true;
+      clearTimeout(timeout);
       if (onDone) onDone();
+
       if (res?.error) {
         setErrorMsg(res.error);
       } else if (res?.state) {
@@ -46,8 +90,26 @@ export default function App() {
 
   const handleJoinRoom = (roomCode, name, avatar, onDone) => {
     setErrorMsg('');
+
+    if (!socket.connected) {
+      socket.connect();
+    }
+
+    let finished = false;
+    const timeout = setTimeout(() => {
+      if (!finished) {
+        finished = true;
+        if (onDone) onDone();
+        setErrorMsg('El servidor no respondió a tiempo. Comprueba el código o si el servidor está activo.');
+      }
+    }, 4500);
+
     socket.emit('join_room', { roomCode, name, avatar }, (res) => {
+      if (finished) return;
+      finished = true;
+      clearTimeout(timeout);
       if (onDone) onDone();
+
       if (res?.error) {
         setErrorMsg(res.error);
       } else if (res?.state) {
@@ -120,6 +182,7 @@ export default function App() {
           onJoinRoom={handleJoinRoom}
           onOpenHelp={() => setShowHelp(true)}
           errorMsg={errorMsg}
+          isConnected={isConnected}
         />
       );
     }
@@ -186,7 +249,7 @@ export default function App() {
 
       default:
         return (
-          <div className="min-h-screen flex items-center justify-center text-white">
+          <div className="min-h-screen flex items-center justify-center text-white font-mono-sport text-xs">
             Cargando estado del partido...
           </div>
         );
@@ -196,7 +259,11 @@ export default function App() {
   return (
     <div className="stadium-bg min-h-[100dvh] text-white flex flex-col relative overflow-hidden">
       {/* Barra de Navegación Flotante */}
-      <Navbar gameState={gameState} onLeaveRoom={gameState ? handleLeaveRoom : null} />
+      <Navbar
+        gameState={gameState}
+        onLeaveRoom={gameState ? handleLeaveRoom : null}
+        isConnected={isConnected}
+      />
 
       {/* Pantalla Activa */}
       <main className="flex-1 flex flex-col justify-center">

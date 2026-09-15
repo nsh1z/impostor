@@ -7,11 +7,12 @@ import {
   faCopy,
   faCheck,
   faRightFromBracket,
-  faUsers
+  faUsers,
+  faWifi
 } from '@fortawesome/free-solid-svg-icons';
 import { soundFx } from '../services/soundFx';
 
-export default function Navbar({ gameState, onLeaveRoom }) {
+export default function Navbar({ gameState, onLeaveRoom, isConnected }) {
   const [copied, setCopied] = useState(false);
   const [muted, setMuted] = useState(soundFx.isMuted());
 
@@ -36,17 +37,23 @@ export default function Navbar({ gameState, onLeaveRoom }) {
   return (
     <header className="fixed top-4 left-0 right-0 z-40 px-4 flex justify-center pointer-events-none">
       <nav className="pointer-events-auto w-full max-w-4xl flex items-center justify-between px-4 py-2.5 rounded-full bg-[#080f0b]/90 backdrop-blur-2xl ring-1 ring-white/10 shadow-[0_12px_40px_rgba(0,0,0,0.7)]">
-        {/* Brand */}
+        {/* Brand & Connection status */}
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#00ff88] to-[#059669] flex items-center justify-center text-black shadow-[0_0_15px_rgba(0,255,136,0.35)]">
             <FontAwesomeIcon icon={faFutbol} className="w-4 h-4" />
           </div>
           <div className="flex flex-col">
-            <span className="font-heading font-black tracking-wider text-xs sm:text-sm bg-gradient-to-r from-white via-white/90 to-[#00ff88] bg-clip-text text-transparent uppercase">
-              Impostor Fútbol
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="font-heading font-black tracking-wider text-xs sm:text-sm bg-gradient-to-r from-white via-white/90 to-[#00ff88] bg-clip-text text-transparent uppercase">
+                Impostor Fútbol
+              </span>
+              <span
+                title={isConnected ? 'Servidor conectado' : 'Desconectado del servidor'}
+                className={`w-2 h-2 rounded-full ${isConnected ? 'bg-[#00ff88] shadow-[0_0_8px_rgba(0,255,136,0.8)]' : 'bg-red-500 animate-ping'}`}
+              />
+            </div>
             <span className="text-[9px] uppercase tracking-[0.2em] text-white/40 font-mono-sport hidden sm:block">
-              Multiplayer táctico
+              {isConnected ? 'Servidor Online' : 'Buscando Servidor...'}
             </span>
           </div>
         </div>
