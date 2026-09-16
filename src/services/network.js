@@ -101,10 +101,21 @@ class NetworkManager {
   }
 
   joinRoom(roomCode, name, avatar, callback) {
+    const cleanCode = (roomCode || '').trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+
     // Si socket.io está conectado activamente, intentar por socket.io primero
     if (socket.connected) {
       this.activeProvider = socket;
-      socket.emit('join_room', { roomCode, name, avatar }, (res) => {
+      socket.emit('join_room', { roomCode: cleanCode, name, avatar }, (res) => {
+        // Si el backend socket no encuentra la sala, intentar P2P como respaldo automático
+        if (res?.error && res.error.toLowerCase().includes('no se encontró la sala')) {
+          console.log('[Network] Sala no encontrada en WebSocket. Probando conexión P2P WebRTC...');
+          this.activeProvider = peerService;
+          peerService.joinRoom(cleanCode, name, avatar, (p2pRes) => {
+            if (callback) callback(p2pRes);
+          });
+          return;
+        }
         if (callback) callback(res);
       });
       return;
@@ -113,7 +124,7 @@ class NetworkManager {
     // SI NO HAY BACKEND: Conectar por Serverless P2P WebRTC
     console.log('[Network] Conectando a sala en modo Serverless P2P...');
     this.activeProvider = peerService;
-    peerService.joinRoom(roomCode, name, avatar, (res) => {
+    peerService.joinRoom(cleanCode, name, avatar, (res) => {
       if (callback) callback(res);
     });
   }

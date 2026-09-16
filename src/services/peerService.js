@@ -1,6 +1,47 @@
 import { Peer } from 'peerjs';
 import { ServerlessEngine } from './serverlessEngine.js';
 
+// Alfabeto legible para códigos de sala sin caracteres confusos (0/O, 1/I)
+const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+
+function generatePeerRoomCode() {
+  let code = '';
+  for (let i = 0; i < 4; i++) {
+    code += CODE_CHARS.charAt(Math.floor(Math.random() * CODE_CHARS.length));
+  }
+  return code;
+}
+
+// Servidores STUN y TURN de alta disponibilidad (Google STUN + OpenRelay TURN para atravesar NAT simétrico / datos móviles)
+const PEER_CONFIG = {
+  debug: 1,
+  config: {
+    iceServers: [
+      { urls: 'stun:stun.l.google.com:19302' },
+      { urls: 'stun:stun1.l.google.com:19302' },
+      { urls: 'stun:stun2.l.google.com:19302' },
+      { urls: 'stun:stun3.l.google.com:19302' },
+      { urls: 'stun:stun4.l.google.com:19302' },
+      { urls: 'stun:openrelay.metered.ca:80' },
+      {
+        urls: 'turn:openrelay.metered.ca:80',
+        username: 'openrelayproject',
+        credential: 'openrelayproject'
+      },
+      {
+        urls: 'turn:openrelay.metered.ca:443',
+        username: 'openrelayproject',
+        credential: 'openrelayproject'
+      },
+      {
+        urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+        username: 'openrelayproject',
+        credential: 'openrelayproject'
+      }
+    ]
+  }
+};
+
 class PeerManager {
   constructor() {
     this.peer = null;
@@ -32,19 +73,17 @@ class PeerManager {
   }
 
   // CREAR SALA COMO ANFITRIÓN P2P
-  createRoom(name, avatar, callback) {
+  createRoom(name, avatar, callback, retryCount = 0) {
     this.disconnect();
     this.isHost = true;
 
-    // Generar código único de 4 caracteres
-    const code = Math.random().toString(36).substring(2, 6).toUpperCase();
+    // Generar código único de 4 caracteres legibles
+    const code = generatePeerRoomCode();
     this.roomCode = code;
     const targetPeerId = `impfutbol-${code.toLowerCase()}`;
 
     try {
-      this.peer = new Peer(targetPeerId, {
-        debug: 1
-      });
+      this.peer = new Peer(targetPeerId, PEER_CONFIG);
 
       this.peer.on('open', (id) => {
         this.myPeerId = id;
@@ -84,6 +123,11 @@ class PeerManager {
 
       this.peer.on('error', (err) => {
         console.error('Error de PeerJS Host:', err);
+        if (err.type === 'unavailable-id' && retryCount < 3) {
+          console.log('ID ya en uso en la nube PeerJS, reintentando con nuevo código...');
+          this.createRoom(name, avatar, callback, retryCount + 1);
+          return;
+        }
         if (callback) callback({ error: 'No se pudo crear la sala P2P. Prueba nuevamente.' });
       });
     } catch (e) {
@@ -96,12 +140,27 @@ class PeerManager {
   joinRoom(roomCode, name, avatar, callback) {
     this.disconnect();
     this.isHost = false;
-    const cleanCode = roomCode.trim().toUpperCase();
+    const cleanCode = (roomCode || '').trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
     this.roomCode = cleanCode;
     const targetHostPeerId = `impfutbol-${cleanCode.toLowerCase()}`;
 
     try {
-      this.peer = new Peer({ debug: 1 });
+      this.peer = new Peer(PEER_CONFIG);
+
+      let responded = false;
+      const finish = (res) => {
+        if (!responded) {
+          responded = true;
+          clearTimeout(joinTimeout);
+          if (typeof callback === 'function') callback(res);
+        }
+      };
+
+      const joinTimeout = setTimeout(() => {
+        finish({
+          error: 'Tiempo de espera agotado. Verifica que el anfitrión tenga la sala abierta y la pantalla encendida.'
+        });
+      }, 18000);
 
       this.peer.on('open', (id) => {
         this.myPeerId = id;
@@ -113,33 +172,32 @@ class PeerManager {
 
         this.hostConnection = conn;
 
-        let responded = false;
-        const joinTimeout = setTimeout(() => {
-          if (!responded) {
-            responded = true;
-            if (callback) callback({ error: 'No se pudo encontrar la sala. Verifica que el anfitrión tenga la sala abierta.' });
-          }
-        }, 8000);
-
-        conn.on('open', () => {
+        const sendJoin = () => {
           this.connected = true;
           this.trigger('connect');
+          try {
+            conn.send({
+              action: 'join_room',
+              name,
+              avatar
+            });
+          } catch (e) {
+            console.warn('Error al enviar join_room:', e);
+          }
+        };
 
-          // Enviar solicitud de unirse
-          conn.send({
-            action: 'join_room',
-            name,
-            avatar
-          });
-        });
+        if (conn.open) {
+          sendJoin();
+        } else {
+          conn.on('open', sendJoin);
+          if (conn.dataChannel && conn.dataChannel.readyState === 'open') {
+            sendJoin();
+          }
+        }
 
         conn.on('data', (msg) => {
           if (msg.action === 'join_response') {
-            if (!responded) {
-              responded = true;
-              clearTimeout(joinTimeout);
-              if (callback) callback(msg.payload);
-            }
+            finish(msg.payload);
           } else if (msg.action === 'game_state') {
             this.trigger('game_state', msg.state);
           } else if (msg.action === 'event') {
@@ -153,21 +211,24 @@ class PeerManager {
         });
 
         conn.on('error', (err) => {
-          if (!responded) {
-            responded = true;
-            clearTimeout(joinTimeout);
-            if (callback) callback({ error: 'Error al conectar con la sala.' });
-          }
+          console.warn('Error en conexión con el anfitrión:', err);
+          finish({ error: 'No se pudo conectar con el anfitrión. Revisa tu red o intenta de nuevo.' });
         });
       });
 
       this.peer.on('error', (err) => {
         console.error('Error de PeerJS Cliente:', err);
-        if (callback) callback({ error: 'Código de sala no encontrado o anfitrión no conectado.' });
+        if (err.type === 'peer-unavailable') {
+          finish({ error: `No se encontró la sala "${cleanCode}". Verifica el código con el anfitrión.` });
+        } else if (err.type === 'network') {
+          finish({ error: 'Error de red con el servidor de señalización. Revisa tu conexión.' });
+        } else {
+          finish({ error: 'No se pudo conectar a la sala. Intenta nuevamente.' });
+        }
       });
     } catch (e) {
       console.error(e);
-      if (callback) callback({ error: 'Error al iniciar conexión.' });
+      if (callback) callback({ error: 'Error al iniciar conexión P2P.' });
     }
   }
 
@@ -209,18 +270,41 @@ class PeerManager {
     }
   }
 
+  safeSend(conn, msg) {
+    if (!conn) return;
+    const doSend = () => {
+      try {
+        conn.send(msg);
+      } catch (err) {
+        console.warn('Error enviando mensaje P2P:', err);
+      }
+    };
+
+    if (conn.open) {
+      doSend();
+    } else if (conn.dataChannel && conn.dataChannel.readyState === 'open') {
+      doSend();
+    } else {
+      if (typeof conn.once === 'function') {
+        conn.once('open', doSend);
+      } else {
+        conn.on('open', doSend);
+      }
+    }
+  }
+
   handleHostReceivedData(fromPeerId, msg) {
     if (!this.engine) return;
 
     if (msg.action === 'join_room') {
       const res = this.engine.joinRoom(fromPeerId, msg.name, msg.avatar);
       const conn = this.connections.get(fromPeerId);
-      if (conn && conn.open) {
+      if (conn) {
         if (res.error) {
-          conn.send({ action: 'join_response', payload: { error: res.error } });
+          this.safeSend(conn, { action: 'join_response', payload: { error: res.error } });
         } else {
           const state = this.engine.getSanitizedState(fromPeerId);
-          conn.send({ action: 'join_response', payload: { success: true, roomCode: this.roomCode, state } });
+          this.safeSend(conn, { action: 'join_response', payload: { success: true, roomCode: this.roomCode, state } });
         }
       }
     } else if (msg.action === 'role_ready') {
@@ -247,13 +331,11 @@ class PeerManager {
 
     // 2. Enviar a cada jugador conectado su estado sanitizado
     this.connections.forEach((conn, peerId) => {
-      if (conn.open) {
-        const playerState = engine.getSanitizedState(peerId);
-        conn.send({
-          action: 'game_state',
-          state: playerState
-        });
-      }
+      const playerState = engine.getSanitizedState(peerId);
+      this.safeSend(conn, {
+        action: 'game_state',
+        state: playerState
+      });
     });
   }
 

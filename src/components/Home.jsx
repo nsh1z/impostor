@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faPlus,
@@ -19,6 +19,25 @@ export default function Home({ onCreateRoom, onJoinRoom, onOpenHelp, errorMsg, i
   const [roomCode, setRoomCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [localError, setLocalError] = useState('');
+
+  // Detectar código de sala desde el enlace compartido (ej: ?sala=ABCD o ?room=ABCD)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const codeParam = params.get('sala') || params.get('room') || window.location.hash.replace('#', '');
+        if (codeParam) {
+          const clean = codeParam.trim().toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4);
+          if (clean.length >= 3) {
+            setRoomCode(clean);
+            setTab('join');
+          }
+        }
+      } catch (e) {
+        console.warn('Error leyendo parámetros de sala:', e);
+      }
+    }
+  }, []);
 
   const handleSelectAvatar = (aId) => {
     soundFx.click();
@@ -50,10 +69,10 @@ export default function Home({ onCreateRoom, onJoinRoom, onOpenHelp, errorMsg, i
     setLoading(true);
 
     if (tab === 'join') {
-      const cleanCode = roomCode.trim().toUpperCase();
+      const cleanCode = (roomCode || '').trim().toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4);
       if (!cleanCode || cleanCode.length < 3) {
         setLoading(false);
-        setLocalError('Ingresa un código de sala válido.');
+        setLocalError('Ingresa un código de sala válido (4 letras o números).');
         return;
       }
       onJoinRoom(cleanCode, trimmedName, avatar, () => setLoading(false));
@@ -182,10 +201,10 @@ export default function Home({ onCreateRoom, onJoinRoom, onOpenHelp, errorMsg, i
                 </label>
                 <input
                   type="text"
-                  maxLength={6}
+                  maxLength={4}
                   value={roomCode}
                   onChange={(e) => {
-                    setRoomCode(e.target.value.toUpperCase());
+                    setRoomCode(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4));
                     if (localError) setLocalError('');
                   }}
                   placeholder="Ej: GOL7"

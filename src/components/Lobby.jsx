@@ -43,19 +43,25 @@ export default function Lobby({ gameState, onStartGame, onUpdateProfile, onUpdat
 
   const handleShareLink = async () => {
     soundFx.click();
-    const url = window.location.href;
+    const shareUrl = `${window.location.origin}${window.location.pathname}?sala=${gameState?.code}`;
     if (navigator.share) {
       try {
         await navigator.share({
           title: 'Impostor Fútbol',
-          text: `Únete a la partida en Impostor Fútbol con el código ${gameState?.code}`,
-          url: url
+          text: `¡Entra al vestuario en Impostor Fútbol con el código ${gameState?.code}!`,
+          url: shareUrl
         });
       } catch (e) {
         handleCopyCode();
       }
     } else {
-      handleCopyCode();
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch (e) {
+        handleCopyCode();
+      }
     }
   };
 

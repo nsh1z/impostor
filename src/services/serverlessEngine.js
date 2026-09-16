@@ -56,25 +56,47 @@ export class ServerlessEngine {
 
   joinRoom(playerId, name, avatar) {
     if (!this.room) return { error: 'Sala no iniciada.' };
-    if (this.room.state !== 'LOBBY') return { error: 'La partida ya comenzó.' };
+    if (this.room.state !== 'LOBBY') return { error: 'La partida ya comenzó. Espera a que termine.' };
 
+    const cleanName = (name || '').trim().substring(0, 16) || `Jugador ${this.room.players.length + 1}`;
+
+    // Buscar si ya existe por ID de peer
     const existing = this.room.players.find(p => p.id === playerId);
     if (existing) {
       existing.connected = true;
-      existing.name = name || existing.name;
+      existing.name = cleanName;
       existing.avatar = avatar || existing.avatar;
-    } else {
-      this.room.players.push({
-        id: playerId,
-        name: name || `Jugador ${this.room.players.length + 1}`,
-        avatar: avatar || 'shirt-7',
-        isHost: false,
-        connected: true,
-        ready: false,
-        isImpostor: false,
-        score: 0
-      });
+      this.broadcastState();
+      return { room: this.room };
     }
+
+    // Buscar si un jugador previamente desconectado intenta volver a entrar con el mismo nombre
+    const existingDisconnected = this.room.players.find(
+      p => !p.connected && p.name.toLowerCase() === cleanName.toLowerCase()
+    );
+    if (existingDisconnected) {
+      existingDisconnected.id = playerId;
+      existingDisconnected.connected = true;
+      existingDisconnected.avatar = avatar || existingDisconnected.avatar;
+      this.broadcastState();
+      return { room: this.room };
+    }
+
+    // Comprobar límite de jugadores
+    if (this.room.players.length >= 10) {
+      return { error: 'La sala está completa (máximo 10 jugadores).' };
+    }
+
+    this.room.players.push({
+      id: playerId,
+      name: cleanName,
+      avatar: avatar || 'shirt-7',
+      isHost: false,
+      connected: true,
+      ready: false,
+      isImpostor: false,
+      score: 0
+    });
 
     this.broadcastState();
     return { room: this.room };
