@@ -192,6 +192,8 @@ class PeerManager {
       } else if (event === 'submit_impostor_guess') {
         this.engine.submitImpostorGuess(this.myPeerId, data?.guessedName);
         if (callback) callback({ success: true });
+      } else if (event === 'update_settings') {
+        this.engine.updateSettings(data);
       } else if (event === 'rematch') {
         this.engine.rematch();
       } else if (event === 'leave_room') {
@@ -229,6 +231,8 @@ class PeerManager {
       this.engine.castVote(fromPeerId, msg.data?.targetPlayerId);
     } else if (msg.action === 'submit_impostor_guess') {
       this.engine.submitImpostorGuess(fromPeerId, msg.data?.guessedName);
+    } else if (msg.action === 'update_settings') {
+      this.engine.updateSettings(msg.data);
     } else if (msg.action === 'rematch') {
       this.engine.rematch();
     } else if (msg.action === 'leave_room') {

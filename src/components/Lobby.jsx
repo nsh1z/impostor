@@ -10,7 +10,9 @@ import {
   faCheck,
   faShareNodes,
   faCircleExclamation,
-  faArrowRight
+  faArrowRight,
+  faLightbulb,
+  faEyeSlash
 } from '@fortawesome/free-solid-svg-icons';
 import FootballIcon, { AVATAR_OPTIONS } from './FootballIcon';
 import { soundFx } from '../services/soundFx';
@@ -154,6 +156,24 @@ export default function Lobby({ gameState, onStartGame, onUpdateProfile, onUpdat
               </div>
             </div>
 
+            {/* Resumen de Ajustes de la Sala para todos los jugadores */}
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-4 px-1 text-[10px] font-mono-sport text-white/50">
+              <span className="uppercase tracking-wider text-white/30">Reglas:</span>
+              <span className="px-2 py-0.5 rounded-full bg-white/[0.04] ring-1 ring-white/10">
+                Pistas: {gameState?.settings?.clueTime || 35}s
+              </span>
+              <span className="px-2 py-0.5 rounded-full bg-white/[0.04] ring-1 ring-white/10">
+                Voto: {gameState?.settings?.votingTime || 40}s
+              </span>
+              <span className={`px-2 py-0.5 rounded-full ring-1 ${
+                gameState?.settings?.hintsEnabled !== false
+                  ? 'bg-amber-400/10 text-amber-300 ring-amber-400/30'
+                  : 'bg-red-400/10 text-red-400 ring-red-400/30'
+              }`}>
+                Pistas Impostor: {gameState?.settings?.hintsEnabled !== false ? 'Activadas' : 'Desactivadas'}
+              </span>
+            </div>
+
             {/* Editor de Perfil Rápido */}
             {editingProfile && (
               <form onSubmit={handleSaveProfile} className="p-4 mb-4 rounded-2xl bg-black/50 ring-1 ring-[#00ff88]/30 space-y-3 animate-fade-in">
@@ -200,7 +220,7 @@ export default function Lobby({ gameState, onStartGame, onUpdateProfile, onUpdat
 
             {/* Configuración del Host */}
             {showSettings && isHost && (
-              <div className="p-4 mb-4 rounded-2xl bg-black/50 ring-1 ring-amber-400/30 space-y-3 text-xs animate-fade-in">
+              <div className="p-4 mb-4 rounded-2xl bg-black/50 ring-1 ring-amber-400/30 space-y-3.5 text-xs animate-fade-in">
                 <span className="text-[10px] font-mono-sport font-black text-amber-400 uppercase tracking-widest block">
                   Parámetros de Juego
                 </span>
@@ -238,6 +258,41 @@ export default function Lobby({ gameState, onStartGame, onUpdateProfile, onUpdat
                       <option value={45}>45 Segundos</option>
                       <option value={60}>60 Segundos</option>
                     </select>
+                  </div>
+                </div>
+
+                {/* Opción de Pistas del Impostor */}
+                <div className="pt-2.5 border-t border-white/10">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <label className="block text-white font-heading font-black text-xs uppercase tracking-wide">
+                        Pistas para el Impostor
+                      </label>
+                      <p className="text-[10px] text-white/40 font-mono-sport mt-0.5">
+                        {gameState?.settings?.hintsEnabled !== false
+                          ? 'El impostor recibe una pista táctica para camuflarse.'
+                          : 'El impostor no recibe pistas (Modo Puro / Difícil).'}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        soundFx.click();
+                        const currentVal = gameState?.settings?.hintsEnabled !== false;
+                        onUpdateSettings({ hintsEnabled: !currentVal });
+                      }}
+                      className={`btn-tactile px-3 py-1.5 rounded-xl text-xs font-mono-sport font-black uppercase tracking-wider flex items-center gap-1.5 transition-all ${
+                        gameState?.settings?.hintsEnabled !== false
+                          ? 'bg-[#00ff88]/20 text-[#00ff88] ring-1 ring-[#00ff88]/50 shadow-[0_0_15px_rgba(0,255,136,0.2)]'
+                          : 'bg-red-500/20 text-red-400 ring-1 ring-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.2)]'
+                      }`}
+                    >
+                      <FontAwesomeIcon
+                        icon={gameState?.settings?.hintsEnabled !== false ? faLightbulb : faEyeSlash}
+                        className="w-3 h-3"
+                      />
+                      <span>{gameState?.settings?.hintsEnabled !== false ? 'Activadas' : 'Desactivadas'}</span>
+                    </button>
                   </div>
                 </div>
               </div>

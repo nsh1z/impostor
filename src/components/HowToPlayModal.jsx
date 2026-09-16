@@ -60,7 +60,7 @@ export default function HowToPlayModal({ isOpen, onClose }) {
                 </div>
                 <p className="text-xs text-white/70 leading-relaxed">
                   Todos los inocentes reciben únicamente el <strong>nombre del futbolista secreto</strong> (sin ningún otro dato). 
-                  El <strong>Impostor</strong> no conoce el nombre, pero <strong>recibe una pista corta y secreta</strong> para deducir quién es y camuflarse en la conversación.
+                  El <strong>Impostor</strong> no conoce el nombre, pero <strong>recibe una pista corta y secreta</strong> para deducir quién es y camuflarse en la conversación (a menos que el anfitrión desactive las pistas en los ajustes de la sala).
                 </p>
               </div>
             </div>

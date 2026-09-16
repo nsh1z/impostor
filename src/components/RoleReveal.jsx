@@ -118,21 +118,38 @@ export default function RoleReveal({ gameState, onReady, onForceStart }) {
                   </h2>
                 </div>
 
-                {/* PISTA CONFIDENCIAL TÁCTICA PARA EL IMPOSTOR */}
-                <div className="w-full p-5 sm:p-6 rounded-2xl bg-black/70 ring-1 ring-amber-400/40 text-center space-y-2">
-                  <div className="flex items-center justify-center gap-2 text-amber-400 font-mono-sport text-[10px] uppercase tracking-widest font-black">
-                    <FontAwesomeIcon icon={faLightbulb} className="w-3.5 h-3.5 text-amber-400" />
-                    <span>Tu Pista Secreta</span>
+                {/* PISTA CONFIDENCIAL TÁCTICA PARA EL IMPOSTOR O MODO SIN PISTAS */}
+                {impostorHint ? (
+                  <div className="w-full p-5 sm:p-6 rounded-2xl bg-black/70 ring-1 ring-amber-400/40 text-center space-y-2">
+                    <div className="flex items-center justify-center gap-2 text-amber-400 font-mono-sport text-[10px] uppercase tracking-widest font-black">
+                      <FontAwesomeIcon icon={faLightbulb} className="w-3.5 h-3.5 text-amber-400" />
+                      <span>Tu Pista Secreta</span>
+                    </div>
+                    <div className="py-3 px-4 rounded-xl bg-amber-500/10 ring-1 ring-amber-400/20">
+                      <span className="text-2xl sm:text-3xl font-heading font-black text-amber-300 tracking-wide uppercase">
+                        {impostorHint}
+                      </span>
+                    </div>
+                    <p className="text-[10px] font-mono-sport text-white/40 tracking-wider uppercase">
+                      Pista exclusiva para deducir al futbolista sin delatarte
+                    </p>
                   </div>
-                  <div className="py-3 px-4 rounded-xl bg-amber-500/10 ring-1 ring-amber-400/20">
-                    <span className="text-2xl sm:text-3xl font-heading font-black text-amber-300 tracking-wide uppercase">
-                      {impostorHint || '?'}
-                    </span>
+                ) : (
+                  <div className="w-full p-5 sm:p-6 rounded-2xl bg-black/70 ring-1 ring-red-500/30 text-center space-y-2.5">
+                    <div className="flex items-center justify-center gap-2 text-red-400 font-mono-sport text-[10px] uppercase tracking-widest font-black">
+                      <FontAwesomeIcon icon={faEyeSlash} className="w-3.5 h-3.5 text-red-400" />
+                      <span>Modo Sin Pistas</span>
+                    </div>
+                    <div className="py-2.5 px-4 rounded-xl bg-red-500/10 ring-1 ring-red-500/20">
+                      <span className="text-xs sm:text-sm font-mono-sport font-bold text-white/90 uppercase tracking-wide">
+                        Pistas desactivadas en esta sala
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-white/50 leading-relaxed max-w-xs mx-auto">
+                      No tienes ninguna pista sobre el futbolista. Escucha las pistas de los inocentes para deducir quién es sin ser descubierto.
+                    </p>
                   </div>
-                  <p className="text-[10px] font-mono-sport text-white/40 tracking-wider uppercase">
-                    Pista exclusiva para deducir al futbolista sin delatarte
-                  </p>
-                </div>
+                )}
 
                 <div className="inline-flex items-center gap-1.5 text-[10px] font-mono-sport uppercase tracking-widest text-white/30">
                   <FontAwesomeIcon icon={faEyeSlash} className="w-2.5 h-2.5" />

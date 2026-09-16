@@ -46,7 +46,8 @@ export class GameEngine {
       settings: {
         clueTime: 35, // segundos por turno de pista
         votingTime: 40, // segundos para votar
-        clueRounds: 1 // 1 ronda de pistas
+        clueRounds: 1, // 1 ronda de pistas
+        hintsEnabled: true // Pistas tácticas para el impostor
       },
       players: [
         {
@@ -144,6 +145,9 @@ export class GameEngine {
     }
     if (newSettings.clueRounds && [1, 2].includes(newSettings.clueRounds)) {
       room.settings.clueRounds = newSettings.clueRounds;
+    }
+    if (newSettings.hintsEnabled !== undefined) {
+      room.settings.hintsEnabled = Boolean(newSettings.hintsEnabled);
     }
     return room;
   }
@@ -588,19 +592,20 @@ export class GameEngine {
     let impostorHint = null;
 
     if (room.state !== 'LOBBY') {
+      const hintsActive = room.settings?.hintsEnabled !== false;
       if (room.state === 'GAME_OVER') {
         // En GAME_OVER todos ven el nombre
         role = isImpostor ? 'IMPOSTOR' : 'INNOCENT';
         secretPlayer = room.secretPlayer ? { name: room.secretPlayer.name } : null;
-        // Solo el impostor tiene la pista
-        impostorHint = isImpostor ? (room.secretPlayer?.hint || null) : null;
+        // Solo el impostor tiene la pista si están activadas
+        impostorHint = isImpostor && hintsActive ? (room.secretPlayer?.hint || null) : null;
       } else {
         // Durante la partida: SEGURIDAD CRIPTO-GRÁFICA
         if (isImpostor) {
           role = 'IMPOSTOR';
           secretPlayer = null; // El impostor NO recibe el nombre
-          // SOLO EL IMPOSTOR TIENE LA PISTA: PISTA COMPLICADA Y CULTURAL
-          impostorHint = room.secretPlayer?.hint || null;
+          // SOLO EL IMPOSTOR TIENE LA PISTA (SI ESTÁN ACTIVADAS)
+          impostorHint = hintsActive ? (room.secretPlayer?.hint || null) : null;
         } else {
           role = 'INNOCENT';
           // SOLO EL NOMBRE: NINGÚN DATO ADICIONAL A NADIE

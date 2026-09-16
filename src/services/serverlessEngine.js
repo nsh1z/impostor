@@ -22,7 +22,7 @@ export class ServerlessEngine {
       code,
       hostId,
       state: 'LOBBY',
-      settings: { clueTime: 35, votingTime: 40, clueRounds: 1 },
+      settings: { clueTime: 35, votingTime: 40, clueRounds: 1, hintsEnabled: true },
       players: [
         {
           id: hostId,
@@ -78,6 +78,24 @@ export class ServerlessEngine {
 
     this.broadcastState();
     return { room: this.room };
+  }
+
+  updateSettings(newSettings) {
+    if (!this.room || this.room.state !== 'LOBBY') return null;
+    if (newSettings.clueTime && newSettings.clueTime >= 20 && newSettings.clueTime <= 90) {
+      this.room.settings.clueTime = newSettings.clueTime;
+    }
+    if (newSettings.votingTime && newSettings.votingTime >= 20 && newSettings.votingTime <= 90) {
+      this.room.settings.votingTime = newSettings.votingTime;
+    }
+    if (newSettings.clueRounds && [1, 2].includes(newSettings.clueRounds)) {
+      this.room.settings.clueRounds = newSettings.clueRounds;
+    }
+    if (newSettings.hintsEnabled !== undefined) {
+      this.room.settings.hintsEnabled = Boolean(newSettings.hintsEnabled);
+    }
+    this.broadcastState();
+    return this.room;
   }
 
   removePlayer(playerId) {
@@ -374,17 +392,18 @@ export class ServerlessEngine {
     let impostorHint = null;
 
     if (this.room.state !== 'LOBBY') {
+      const hintsActive = this.room.settings?.hintsEnabled !== false;
       if (this.room.state === 'GAME_OVER') {
         role = isImpostor ? 'IMPOSTOR' : 'INNOCENT';
         secretPlayer = this.room.secretPlayer ? { name: this.room.secretPlayer.name } : null;
-        // Solo el impostor tiene la pista
-        impostorHint = isImpostor ? (this.room.secretPlayer?.hint || null) : null;
+        // Solo el impostor tiene la pista si están activadas
+        impostorHint = isImpostor && hintsActive ? (this.room.secretPlayer?.hint || null) : null;
       } else {
         if (isImpostor) {
           role = 'IMPOSTOR';
           secretPlayer = null; // Criptoseguro: el impostor NO recibe el nombre
-          // SOLO EL IMPOSTOR TIENE LA PISTA: PISTA COMPLICADA Y CULTURAL
-          impostorHint = this.room.secretPlayer?.hint || null;
+          // SOLO EL IMPOSTOR TIENE LA PISTA (SI ESTÁN ACTIVADAS)
+          impostorHint = hintsActive ? (this.room.secretPlayer?.hint || null) : null;
         } else {
           role = 'INNOCENT';
           // SOLO EL NOMBRE: NINGÚN DATO ADICIONAL A NADIE
