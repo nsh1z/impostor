@@ -1,9 +1,15 @@
 import { io } from 'socket.io-client';
 
-// Determinar la URL del servidor WebSocket:
-// 1. Variable de entorno VITE_SERVER_URL (si está definida)
-// 2. Si estamos en localhost o 127.0.0.1 (cualquier puerto, ej: 5173 de Vite), conectar directamente al puerto 3000
-// 3. De lo contrario, usar window.location.origin
+// Determinar si hay un backend WebSocket real configurado:
+// 1. Variable de entorno VITE_SERVER_URL
+// 2. Localhost o 127.0.0.1 (desarrollo local)
+const hasDedicatedBackend = () => {
+  if (typeof window === 'undefined') return true;
+  if (import.meta.env.VITE_SERVER_URL) return true;
+  const { hostname } = window.location;
+  return hostname === 'localhost' || hostname === '127.0.0.1';
+};
+
 const getSocketUrl = () => {
   if (import.meta.env.VITE_SERVER_URL) {
     return import.meta.env.VITE_SERVER_URL;
@@ -13,32 +19,39 @@ const getSocketUrl = () => {
     if (hostname === 'localhost' || hostname === '127.0.0.1') {
       return `http://${hostname}:3000`;
     }
-    return window.location.origin;
   }
   return 'http://localhost:3000';
 };
 
+const shouldConnect = hasDedicatedBackend();
 const socketUrl = getSocketUrl();
-console.log('[Socket] Conectando a:', socketUrl);
 
-// Transports por defecto: polling primero para handshake instantáneo, luego upgrade a websocket
+if (shouldConnect) {
+  console.log('[Socket] Conectando a servidor backend:', socketUrl);
+} else {
+  console.log('[Socket] Modo Serverless en la nube: conexión P2P WebRTC activa.');
+}
+
+// Transports: solo autoconectar si existe un servidor dedicado
 export const socket = io(socketUrl, {
   transports: ['polling', 'websocket'],
-  autoConnect: true,
-  reconnection: true,
-  reconnectionAttempts: Infinity,
-  reconnectionDelay: 1000,
-  timeout: 10000
+  autoConnect: shouldConnect,
+  reconnection: shouldConnect,
+  reconnectionAttempts: 4,
+  reconnectionDelay: 2000,
+  timeout: 8000
 });
 
-socket.on('connect', () => {
-  console.log('[Socket Conectado con éxito! ID:]', socket.id);
-});
+if (shouldConnect) {
+  socket.on('connect', () => {
+    console.log('[Socket Conectado con éxito! ID:]', socket.id);
+  });
 
-socket.on('connect_error', (err) => {
-  console.warn('[Socket Error de conexión]:', err.message);
-});
+  socket.on('connect_error', (err) => {
+    console.warn('[Socket Error de conexión]:', err.message);
+  });
 
-socket.on('disconnect', (reason) => {
-  console.log('[Socket Desconectado]:', reason);
-});
+  socket.on('disconnect', (reason) => {
+    console.log('[Socket Desconectado]:', reason);
+  });
+}
