@@ -11,6 +11,7 @@ import {
   faArrowRight
 } from '@fortawesome/free-solid-svg-icons';
 import FootballIcon from './FootballIcon';
+import PlayerCardPhoto from './PlayerCardPhoto';
 import { soundFx } from '../services/soundFx';
 import { recordMatchResult } from '../services/leaderboard';
 
@@ -110,15 +111,27 @@ export default function GameOver({ gameState, onRematch, onOpenTopPlayers }) {
           <div className="bezel-card">
             <div className="bezel-inner p-4 sm:p-5 h-full flex flex-col justify-between">
               <div>
-                <div className="flex items-center justify-between text-xs mb-2">
+                <div className="flex items-center justify-between text-xs mb-3">
                   <span className="text-[9px] uppercase font-mono-sport font-black text-[#00ff88] tracking-widest">
                     FUTBOLISTA SECRETO
                   </span>
                   <FontAwesomeIcon icon={faFutbol} className="w-3.5 h-3.5 text-[#00ff88]" />
                 </div>
-                <h3 className="text-xl sm:text-2xl font-heading font-black text-white">
-                  {secretPlayer?.name || 'Futbolista'}
-                </h3>
+                <div className="flex items-center gap-3.5">
+                  <PlayerCardPhoto
+                    playerId={secretPlayer?.id}
+                    playerName={secretPlayer?.name}
+                    size="md"
+                  />
+                  <div className="min-w-0">
+                    <h3 className="text-xl sm:text-2xl font-heading font-black text-white leading-tight">
+                      {secretPlayer?.name || 'Futbolista'}
+                    </h3>
+                    <span className="text-[10px] font-mono-sport text-[#00ff88]/80 uppercase tracking-wider block mt-1">
+                      Identidad Revelada
+                    </span>
+                  </div>
+                </div>
               </div>
 
               <div className="mt-4 pt-2.5 border-t border-white/5 text-[10px] font-mono-sport uppercase tracking-wider text-white/40">

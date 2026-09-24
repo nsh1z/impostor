@@ -11,6 +11,7 @@ import {
   faArrowRight
 } from '@fortawesome/free-solid-svg-icons';
 import { soundFx } from '../services/soundFx';
+import PlayerCardPhoto from './PlayerCardPhoto';
 
 export default function RoleReveal({ gameState, onReady, onForceStart }) {
   const [revealed, setRevealed] = useState(false);
@@ -157,25 +158,34 @@ export default function RoleReveal({ gameState, onReady, onForceStart }) {
                 </div>
               </div>
             ) : (
-              // Estado Revelado: INOCENTE (SOLO EL NOMBRE, NINGÚN OTRO DATO)
-              <div className="space-y-5 flex flex-col items-center animate-fade-in w-full">
-                <div className="w-14 h-14 rounded-2xl bg-[#00ff88]/20 ring-1 ring-[#00ff88]/50 flex items-center justify-center text-[#00ff88] shadow-[0_0_25px_rgba(0,255,136,0.3)]">
-                  <FontAwesomeIcon icon={faShieldHalved} className="w-7 h-7" />
-                </div>
-
-                <div className="space-y-2">
+              // Estado Revelado: INOCENTE (FUTBOLISTA SECRETO CON FOTO)
+              <div className="space-y-4 flex flex-col items-center animate-fade-in w-full">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-xl bg-[#00ff88]/20 ring-1 ring-[#00ff88]/50 flex items-center justify-center text-[#00ff88] shadow-[0_0_15px_rgba(0,255,136,0.3)]">
+                    <FontAwesomeIcon icon={faShieldHalved} className="w-3.5 h-3.5" />
+                  </div>
                   <span className="px-2.5 py-0.5 rounded-full bg-[#00ff88]/20 ring-1 ring-[#00ff88]/40 text-[10px] font-mono-sport font-black uppercase text-[#00ff88] tracking-wider">
                     FUTBOLISTA SECRETO
                   </span>
-                  <h2 className="text-3xl sm:text-4xl font-heading font-black text-white uppercase tracking-wide">
+                </div>
+
+                {/* Fotografía Oficial de la Estrella */}
+                <PlayerCardPhoto
+                  playerId={player?.id}
+                  playerName={player?.name}
+                  size="md"
+                />
+
+                <div className="space-y-1 text-center">
+                  <h2 className="text-2xl sm:text-3xl font-heading font-black text-white uppercase tracking-wide">
                     {player?.name}
                   </h2>
-                  <p className="text-xs text-white/40 font-mono-sport uppercase tracking-widest pt-1">
-                    Solo tú y tu equipo conocen el nombre
+                  <p className="text-xs text-white/40 font-mono-sport uppercase tracking-widest">
+                    Solo tú y tu equipo conocen la identidad
                   </p>
                 </div>
 
-                <div className="inline-flex items-center gap-1.5 text-[10px] font-mono-sport uppercase tracking-widest text-white/30">
+                <div className="inline-flex items-center gap-1.5 text-[10px] font-mono-sport uppercase tracking-widest text-white/30 pt-1">
                   <FontAwesomeIcon icon={faEyeSlash} className="w-2.5 h-2.5" />
                   <span>Toca para ocultar nuevamente</span>
                 </div>
