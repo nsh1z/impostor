@@ -121,7 +121,91 @@ export const FOOTBALL_PLAYERS = [
   { id: "modric", name: "Luka Modrić", aliases: ["modric", "luka modric"], hint: "Balón de Oro 2018" },
   { id: "ibrahimovic", name: "Zlatan Ibrahimović", aliases: ["zlatan", "ibrahimovic", "zlatan ibrahimovic"], hint: "Taekwondo" },
   { id: "iniesta", name: "Andrés Iniesta", aliases: ["iniesta", "andres iniesta", "don andres"], hint: "Dani Jarque" },
-  { id: "buffon", name: "Gianluigi Buffon", aliases: ["buffon", "gianluigi buffon", "gigi buffon"], hint: "Serie B" }
+  { id: "buffon", name: "Gianluigi Buffon", aliases: ["buffon", "gianluigi buffon", "gigi buffon"], hint: "Serie B" },
+
+  // ==========================================
+  // FIGURAS Y LEYENDAS DE EUROPA
+  // ==========================================
+  // España
+  { id: "xavi", name: "Xavi Hernández", aliases: ["xavi", "xavi hernandez", "el cerebro", "hernandez"], hint: "La Pelopina" },
+  { id: "sergio_ramos", name: "Sergio Ramos", aliases: ["sergio ramos", "ramos", "el camero"], hint: "Minuto 93 Lisboa" },
+  { id: "casillas", name: "Iker Casillas", aliases: ["casillas", "iker casillas", "san iker"], hint: "Pie a Robben" },
+  { id: "puyol", name: "Carles Puyol", aliases: ["puyol", "carles puyol", "tiburon puyol", "tarzan"], hint: "Melena de hierro" },
+  { id: "busquets", name: "Sergio Busquets", aliases: ["busquets", "sergio busquets", "busi"], hint: "Giro en baldosa" },
+  { id: "pique", name: "Gerard Piqué", aliases: ["pique", "gerard pique", "presi"], hint: "Waka Waka" },
+  { id: "lamine_yamal", name: "Lamine Yamal", aliases: ["lamine yamal", "yamal", "lamine"], hint: "Rocafonda 304" },
+  { id: "rodri", name: "Rodri Hernández", aliases: ["rodri", "rodrigo hernandez", "rodri hernandez"], hint: "Sin redes sociales" },
+  { id: "pedri", name: "Pedri", aliases: ["pedri", "pedro gonzalez", "pedri gonzalez"], hint: "Tegueste" },
+  { id: "gavi", name: "Gavi", aliases: ["gavi", "pablo gavi", "gavira", "pablo gavira"], hint: "Cordones desatados" },
+  { id: "david_villa", name: "David Villa", aliases: ["david villa", "villa", "el guaje villa", "el guaje"], hint: "El Guaje" },
+  { id: "fernando_torres", name: "Fernando Torres", aliases: ["fernando torres", "torres", "el nino torres", "el nino"], hint: "Vaselina en Viena" },
+  { id: "raul", name: "Raúl González", aliases: ["raul", "raul gonzalez", "el angel del madrid"], hint: "Beso al anillo" },
+
+  // Francia
+  { id: "benzema", name: "Karim Benzema", aliases: ["karim benzema", "benzema", "el gato benzema", "el gato", "kb9"], hint: "Venda en muñeca" },
+  { id: "henry", name: "Thierry Henry", aliases: ["thierry henry", "henry", "titi henry", "titi"], hint: "Mano a Irlanda" },
+  { id: "griezmann", name: "Antoine Griezmann", aliases: ["antoine griezmann", "griezmann", "el principito", "grizou"], hint: "Tomador de mate" },
+  { id: "kante", name: "N'Golo Kanté", aliases: ["ngolo kante", "n'golo kante", "kante"], hint: "Mini Cooper blanco" },
+  { id: "pogba", name: "Paul Pogba", aliases: ["paul pogba", "pogba", "la pioche", "pogboom"], hint: "El Dab" },
+  { id: "platini", name: "Michel Platini", aliases: ["michel platini", "platini", "le roi"], hint: "Eurocopa del 84" },
+  { id: "cantona", name: "Eric Cantona", aliases: ["eric cantona", "cantona", "the king cantona"], hint: "Cuello levantado" },
+  { id: "ribery", name: "Franck Ribéry", aliases: ["franck ribery", "ribery", "scarface"], hint: "Scarface" },
+
+  // Inglaterra
+  { id: "bellingham", name: "Jude Bellingham", aliases: ["jude bellingham", "bellingham", "hey jude"], hint: "Brazos abiertos" },
+  { id: "kane", name: "Harry Kane", aliases: ["harry kane", "kane", "huracan kane"], hint: "Maldición sin títulos" },
+  { id: "rooney", name: "Wayne Rooney", aliases: ["wayne rooney", "rooney", "wazza"], hint: "Chilena al City" },
+  { id: "beckham", name: "David Beckham", aliases: ["david beckham", "beckham", "becks"], hint: "Rosca a Grecia" },
+  { id: "gerrard", name: "Steven Gerrard", aliases: ["steven gerrard", "gerrard", "stevie g"], hint: "Milagro de Estambul" },
+  { id: "lampard", name: "Frank Lampard", aliases: ["frank lampard", "lampard", "super frankie"], hint: "Gol fantasma" },
+  { id: "foden", name: "Phil Foden", aliases: ["phil foden", "foden", "sniper"], hint: "El francotirador" },
+
+  // Alemania
+  { id: "kroos", name: "Toni Kroos", aliases: ["toni kroos", "kroos", "el francotirador kroos"], hint: "Botas blancas 11pro" },
+  { id: "thomas_muller", name: "Thomas Müller", aliases: ["thomas muller", "muller", "thomas mueller"], hint: "El Raumdeuter" },
+  { id: "neuer", name: "Manuel Neuer", aliases: ["manuel neuer", "neuer", "manu neuer"], hint: "Líbero con guantes" },
+  { id: "ozil", name: "Mesut Özil", aliases: ["mesut ozil", "ozil", "mesut oezil", "el mago de oz"], hint: "Pase sin mirar" },
+  { id: "reus", name: "Marco Reus", aliases: ["marco reus", "reus"], hint: "Muro Amarillo" },
+  { id: "beckenbauer", name: "Franz Beckenbauer", aliases: ["franz beckenbauer", "beckenbauer", "der kaiser", "el kaiser de alemania"], hint: "Hombro vendado" },
+  { id: "gerd_muller", name: "Gerd Müller", aliases: ["gerd muller", "gerd mueller", "el torpedo muller", "der bomber"], hint: "El Torpedo" },
+  { id: "klose", name: "Miroslav Klose", aliases: ["miroslav klose", "klose"], hint: "Voltereta en Mundiales" },
+  { id: "schweinsteiger", name: "Bastian Schweinsteiger", aliases: ["bastian schweinsteiger", "schweinsteiger", "schweini"], hint: "Pómulo cortado 2014" },
+
+  // Italia
+  { id: "pirlo", name: "Andrea Pirlo", aliases: ["andrea pirlo", "pirlo", "el arquitecto", "el maestro pirlo"], hint: "Cata de vinos" },
+  { id: "totti", name: "Francesco Totti", aliases: ["francesco totti", "totti", "il capitano"], hint: "Selfie en Curva" },
+  { id: "maldini", name: "Paolo Maldini", aliases: ["paolo maldini", "maldini", "il capitano maldini"], hint: "Dinastía rossonera" },
+  { id: "del_piero", name: "Alessandro Del Piero", aliases: ["alessandro del piero", "del piero", "pinturicchio"], hint: "Pinturicchio" },
+  { id: "cannavaro", name: "Fabio Cannavaro", aliases: ["fabio cannavaro", "cannavaro", "il muro di berlino"], hint: "Muro de Berlín" },
+  { id: "baggio", name: "Roberto Baggio", aliases: ["roberto baggio", "baggio", "il divin codino"], hint: "Il Divin Codino" },
+  { id: "chiellini", name: "Giorgio Chiellini", aliases: ["giorgio chiellini", "chiellini", "king kong"], hint: "Tirón a Saka" },
+  { id: "donnarumma", name: "Gianluigi Donnarumma", aliases: ["gianluigi donnarumma", "donnarumma", "gigio donnarumma"], hint: "Penales de Wembley" },
+
+  // Portugal
+  { id: "bernardo_silva", name: "Bernardo Silva", aliases: ["bernardo silva", "bernardo"], hint: "Cafecito lisboeta" },
+  { id: "bruno_fernandes", name: "Bruno Fernandes", aliases: ["bruno fernandes", "bruno"], hint: "Salto en penales" },
+  { id: "figo", name: "Luís Figo", aliases: ["luis figo", "figo"], hint: "Cochinillo del clásico" },
+  { id: "pepe", name: "Pepe", aliases: ["pepe", "kepler laveran", "pepe real madrid"], hint: "Patadas a Casquero" },
+
+  // Países Bajos
+  { id: "robben", name: "Arjen Robben", aliases: ["arjen robben", "robben"], hint: "Enganche hacia adentro" },
+  { id: "van_persie", name: "Robin van Persie", aliases: ["robin van persie", "van persie", "rvp"], hint: "Palomita en Salvador" },
+  { id: "bergkamp", name: "Dennis Bergkamp", aliases: ["dennis bergkamp", "bergkamp", "el hombre que no vuela"], hint: "Miedo a volar" },
+  { id: "van_basten", name: "Marco van Basten", aliases: ["marco van basten", "van basten"], hint: "Volea de Múnich" },
+  { id: "gullit", name: "Ruud Gullit", aliases: ["ruud gullit", "gullit"], hint: "Rastas de Milán" },
+  { id: "van_dijk", name: "Virgil van Dijk", aliases: ["virgil van dijk", "van dijk", "vvd"], hint: "Muralla de Breda" },
+
+  // Bélgica
+  { id: "de_bruyne", name: "Kevin De Bruyne", aliases: ["kevin de bruyne", "de bruyne", "kdb"], hint: "Pecoso de Gante" },
+  { id: "hazard", name: "Eden Hazard", aliases: ["eden hazard", "hazard"], hint: "Hamburguesa en Lille" },
+  { id: "courtois", name: "Thibaut Courtois", aliases: ["thibaut courtois", "courtois"], hint: "Final de París" },
+
+  // Polonia, Gales, Hungría, Ucrania y Rusia
+  { id: "lewandowski", name: "Robert Lewandowski", aliases: ["robert lewandowski", "lewandowski", "lewy"], hint: "Cinco en nueve" },
+  { id: "bale", name: "Gareth Bale", aliases: ["gareth bale", "bale", "el expreso de cardiff"], hint: "Gales, Golf, Madrid" },
+  { id: "puskas", name: "Ferenc Puskás", aliases: ["ferenc puskas", "puskas", "canoncito pum"], hint: "Cañoncito Pum" },
+  { id: "shevchenko", name: "Andriy Shevchenko", aliases: ["andriy shevchenko", "shevchenko", "sheva"], hint: "Héroe de Kiev" },
+  { id: "yashin", name: "Lev Yashin", aliases: ["lev yashin", "yashin", "la arana negra"], hint: "Araña Negra" }
 ];
 
 export function getRandomPlayer(recentIds = []) {
