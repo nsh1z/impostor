@@ -6,13 +6,14 @@ import {
   faCircleQuestion,
   faTriangleExclamation,
   faFutbol,
-  faRotate
+  faRotate,
+  faTrophy
 } from '@fortawesome/free-solid-svg-icons';
 import FootballIcon, { AVATAR_OPTIONS } from './FootballIcon';
 import { soundFx } from '../services/soundFx';
 import { socket } from '../services/socket';
 
-export default function Home({ onCreateRoom, onJoinRoom, onOpenHelp, errorMsg, isConnected }) {
+export default function Home({ onCreateRoom, onJoinRoom, onOpenHelp, onOpenTopPlayers, errorMsg, isConnected }) {
   const [tab, setTab] = useState('create'); // 'create' | 'join'
   const [name, setName] = useState(() => localStorage.getItem('impostor_name') || '');
   const [avatar, setAvatar] = useState(() => localStorage.getItem('impostor_avatar') || 'shirt-10');
@@ -229,18 +230,32 @@ export default function Home({ onCreateRoom, onJoinRoom, onOpenHelp, errorMsg, i
             </button>
           </form>
 
-          {/* Botón de Cómo Jugar */}
-          <div className="mt-5 pt-4 border-t border-white/5 flex items-center justify-center">
+          {/* Acciones Secundarias */}
+          <div className="mt-5 pt-4 border-t border-white/5 flex items-center justify-center gap-4 flex-wrap">
+            <button
+              type="button"
+              onClick={() => {
+                soundFx.click();
+                if (onOpenTopPlayers) onOpenTopPlayers();
+              }}
+              className="btn-tactile inline-flex items-center gap-1.5 text-xs text-amber-400/80 hover:text-amber-300 transition-colors"
+            >
+              <FontAwesomeIcon icon={faTrophy} className="w-3.5 h-3.5 text-amber-400" />
+              <span>Top Jugadores</span>
+            </button>
+
+            <span className="text-white/20">•</span>
+
             <button
               type="button"
               onClick={() => {
                 soundFx.click();
                 onOpenHelp();
               }}
-              className="btn-tactile inline-flex items-center gap-2 text-xs text-white/50 hover:text-[#00ff88] transition-colors"
+              className="btn-tactile inline-flex items-center gap-1.5 text-xs text-white/50 hover:text-[#00ff88] transition-colors"
             >
               <FontAwesomeIcon icon={faCircleQuestion} className="w-3.5 h-3.5 text-[#00ff88]" />
-              <span>Ver reglamento y cómo se juega</span>
+              <span>Cómo se juega</span>
             </button>
           </div>
         </div>

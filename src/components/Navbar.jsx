@@ -8,11 +8,12 @@ import {
   faCheck,
   faRightFromBracket,
   faUsers,
-  faWifi
+  faWifi,
+  faTrophy
 } from '@fortawesome/free-solid-svg-icons';
 import { soundFx } from '../services/soundFx';
 
-export default function Navbar({ gameState, onLeaveRoom, isConnected }) {
+export default function Navbar({ gameState, onLeaveRoom, isConnected, onOpenTopPlayers }) {
   const [copied, setCopied] = useState(false);
   const [muted, setMuted] = useState(soundFx.isMuted());
 
@@ -90,6 +91,20 @@ export default function Navbar({ gameState, onLeaveRoom, isConnected }) {
 
         {/* Action Controls */}
         <div className="flex items-center gap-2">
+          {onOpenTopPlayers && (
+            <button
+              onClick={() => {
+                soundFx.click();
+                onOpenTopPlayers();
+              }}
+              title="Tabla de Top Jugadores"
+              className="btn-tactile px-2.5 h-8 rounded-full bg-amber-500/10 hover:bg-amber-500/20 ring-1 ring-amber-500/30 flex items-center gap-1.5 text-amber-400 hover:text-amber-300 transition-all text-xs font-mono-sport"
+            >
+              <FontAwesomeIcon icon={faTrophy} className="w-3.5 h-3.5 text-amber-400" />
+              <span className="hidden sm:inline font-bold">Top</span>
+            </button>
+          )}
+
           <button
             onClick={handleToggleMute}
             title={muted ? 'Activar efectos de audio' : 'Silenciar audio'}

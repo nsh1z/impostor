@@ -10,11 +10,13 @@ import ResultsRound from './components/ResultsRound';
 import ImpostorGuessModal from './components/ImpostorGuessModal';
 import GameOver from './components/GameOver';
 import HowToPlayModal from './components/HowToPlayModal';
+import TopPlayersModal from './components/TopPlayersModal';
 
 export default function App() {
   const [gameState, setGameState] = useState(null);
   const [errorMsg, setErrorMsg] = useState('');
   const [showHelp, setShowHelp] = useState(false);
+  const [showTopPlayers, setShowTopPlayers] = useState(false);
   const [isConnected, setIsConnected] = useState(network.isConnected());
 
   useEffect(() => {
@@ -130,6 +132,7 @@ export default function App() {
           onCreateRoom={handleCreateRoom}
           onJoinRoom={handleJoinRoom}
           onOpenHelp={() => setShowHelp(true)}
+          onOpenTopPlayers={() => setShowTopPlayers(true)}
           errorMsg={errorMsg}
           isConnected={isConnected}
         />
@@ -193,6 +196,7 @@ export default function App() {
           <GameOver
             gameState={gameState}
             onRematch={handleRematch}
+            onOpenTopPlayers={() => setShowTopPlayers(true)}
           />
         );
 
@@ -212,6 +216,7 @@ export default function App() {
         gameState={gameState}
         onLeaveRoom={gameState ? handleLeaveRoom : null}
         isConnected={isConnected}
+        onOpenTopPlayers={() => setShowTopPlayers(true)}
       />
 
       {/* Pantalla Activa */}
@@ -221,6 +226,9 @@ export default function App() {
 
       {/* Modal de Reglas */}
       <HowToPlayModal isOpen={showHelp} onClose={() => setShowHelp(false)} />
+
+      {/* Modal de Top Jugadores */}
+      <TopPlayersModal isOpen={showTopPlayers} onClose={() => setShowTopPlayers(false)} />
     </div>
   );
 }

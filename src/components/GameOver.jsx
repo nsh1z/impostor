@@ -12,8 +12,9 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import FootballIcon from './FootballIcon';
 import { soundFx } from '../services/soundFx';
+import { recordMatchResult } from '../services/leaderboard';
 
-export default function GameOver({ gameState, onRematch }) {
+export default function GameOver({ gameState, onRematch, onOpenTopPlayers }) {
   const winner = gameState?.winner; // 'INNOCENTS' | 'IMPOSTOR'
   const winReason = gameState?.winReason;
   const secretPlayer = gameState?.secretPlayer;
@@ -24,6 +25,8 @@ export default function GameOver({ gameState, onRematch }) {
   const iWon = (winner === 'IMPOSTOR' && myRole === 'IMPOSTOR') || (winner === 'INNOCENTS' && myRole === 'INNOCENT');
 
   useEffect(() => {
+    // Registrar automáticamente los resultados por nombre en el Top Jugadores
+    recordMatchResult(gameState);
     soundFx.victory();
 
     const duration = 3 * 1000;
@@ -163,7 +166,7 @@ export default function GameOver({ gameState, onRematch }) {
         </div>
 
         {/* Botón de Revancha Inmediata */}
-        <div className="pt-2">
+        <div className="pt-2 space-y-2">
           <button
             onClick={() => {
               soundFx.whistle();
@@ -176,7 +179,21 @@ export default function GameOver({ gameState, onRematch }) {
               <FontAwesomeIcon icon={faRotate} className="w-3 h-3 text-black" />
             </div>
           </button>
-          <p className="text-center text-[10px] font-mono-sport uppercase tracking-widest text-white/40 mt-2">
+
+          {onOpenTopPlayers && (
+            <button
+              onClick={() => {
+                soundFx.click();
+                onOpenTopPlayers();
+              }}
+              className="btn-tactile w-full py-3 rounded-full bg-white/[0.04] hover:bg-white/[0.08] ring-1 ring-white/10 font-heading font-bold text-amber-400 text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all hover:ring-amber-400/30"
+            >
+              <FontAwesomeIcon icon={faTrophy} className="w-3 h-3 text-amber-400" />
+              <span>Ver Tabla de Top Jugadores</span>
+            </button>
+          )}
+
+          <p className="text-center text-[10px] font-mono-sport uppercase tracking-widest text-white/40 pt-1">
             Regresarán todos al vestuario para una nueva partida con otro futbolista secreto.
           </p>
         </div>
