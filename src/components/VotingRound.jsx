@@ -11,36 +11,21 @@ import {
 import FootballIcon from './FootballIcon';
 import { soundFx } from '../services/soundFx';
 
-export default function VotingRound({ gameState, onCastVote }) {
+export default function VotingRound({ gameState, onCastVote, onForceResolveVoting }) {
   const [selectedTargetId, setSelectedTargetId] = useState(null);
-  const [timeLeft, setTimeLeft] = useState(gameState?.votingTimeLeft || 40);
 
   const myId = gameState?.me?.id;
+  const isHost = gameState?.me?.isHost;
   const connectedPlayers = gameState?.players?.filter(p => p.connected) || [];
   const candidates = connectedPlayers;
   const votedPlayerIds = gameState?.votedPlayerIds || [];
   const hasVoted = selectedTargetId !== null;
-
-  useEffect(() => {
-    if (gameState?.votingTimeLeft !== undefined) {
-      setTimeLeft(gameState.votingTimeLeft);
-    }
-  }, [gameState?.votingTimeLeft]);
-
-  useEffect(() => {
-    if (timeLeft <= 5 && timeLeft > 0) {
-      soundFx.tick();
-    }
-  }, [timeLeft]);
 
   const handleVote = (targetId) => {
     soundFx.alarm();
     setSelectedTargetId(targetId);
     onCastVote(targetId);
   };
-
-  const maxTime = gameState?.settings?.votingTime || 40;
-  const progressPercent = Math.max(0, Math.min(100, (timeLeft / maxTime) * 100));
 
   return (
     <div className="min-h-[100dvh] flex flex-col items-center justify-center px-4 py-20 relative select-none">
@@ -61,28 +46,35 @@ export default function VotingRound({ gameState, onCastVote }) {
             </h1>
 
             <p className="text-xs text-white/50 mt-1 max-w-md mx-auto">
-              Emite tu voto secreto. Si la sala acusa a un inocente, el impostor gana el partido.
+              Debatan libremente y emitan su voto. Si la sala acusa a un inocente, el impostor gana el partido.
             </p>
 
-            {/* Temporizador */}
-            <div className="mt-4 inline-flex items-center gap-3 px-4 py-2 rounded-2xl bg-black/50 ring-1 ring-white/10">
-              <FontAwesomeIcon
-                icon={faClock}
-                className={`w-3.5 h-3.5 ${timeLeft <= 5 ? 'text-red-400 animate-bounce' : 'text-amber-400'}`}
-              />
-              <span className="font-mono-sport text-base font-black text-white">
-                00:{timeLeft < 10 ? `0${timeLeft}` : timeLeft}
-              </span>
-              <div className="w-24 h-1.5 bg-white/10 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-red-500 transition-all duration-1000"
-                  style={{ width: `${progressPercent}%` }}
-                />
+            {/* Estado de Votación sin límite de tiempo */}
+            <div className="mt-4 flex flex-col sm:flex-row items-center justify-center gap-2.5">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-black/50 ring-1 ring-white/10">
+                <span className="w-2 h-2 rounded-full bg-[#00ff88] animate-pulse" />
+                <span className="font-mono-sport text-xs font-bold uppercase tracking-wider text-white/90">
+                  Sin límite de tiempo
+                </span>
               </div>
+
+              {isHost && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundFx.whistle();
+                    if (onForceResolveVoting) onForceResolveVoting();
+                  }}
+                  className="btn-tactile px-4 py-2 rounded-2xl bg-amber-500/15 hover:bg-amber-500/25 ring-1 ring-amber-500/40 text-amber-300 font-heading font-black text-xs uppercase tracking-wider flex items-center gap-2 transition-all shadow-[0_0_15px_rgba(245,158,11,0.2)]"
+                >
+                  <FontAwesomeIcon icon={faTv} className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Cerrar Votación y Revelar VAR</span>
+                </button>
+              )}
             </div>
 
             {/* Progreso de votos */}
-            <div className="mt-3 text-xs text-white/40 font-mono-sport">
+            <div className="mt-3 text-xs text-white/50 font-mono-sport">
               Votos computados: <span className="text-[#00ff88] font-bold">{votedPlayerIds.length}</span> / {connectedPlayers.length}
             </div>
           </div>
@@ -160,7 +152,7 @@ export default function VotingRound({ gameState, onCastVote }) {
         {hasVoted && (
           <div className="p-3.5 rounded-2xl bg-[#00ff88]/10 ring-1 ring-[#00ff88]/30 flex items-center justify-center gap-2 text-xs text-[#00ff88] text-center font-medium animate-fade-in font-mono-sport">
             <FontAwesomeIcon icon={faCircleCheck} className="w-3.5 h-3.5 shrink-0" />
-            <span>Voto registrado. Puedes modificar tu acusación antes de que expire el cronómetro.</span>
+            <span>Voto registrado. Puedes modificar tu sospecha mientras continúe el debate.</span>
           </div>
         )}
       </div>

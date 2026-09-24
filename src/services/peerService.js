@@ -360,6 +360,8 @@ class PeerManager {
         this.engine.advanceTurn();
       } else if (event === 'cast_vote') {
         this.engine.castVote(this.myPeerId, data?.targetPlayerId);
+      } else if (event === 'force_resolve_voting') {
+        this.engine.forceResolveVoting(this.myPeerId);
       } else if (event === 'submit_impostor_guess') {
         this.engine.submitImpostorGuess(this.myPeerId, data?.guessedName);
         if (callback) callback({ success: true });
@@ -400,6 +402,8 @@ class PeerManager {
       this.engine.submitClue(fromPeerId, msg.data?.clueText);
     } else if (msg.action === 'cast_vote') {
       this.engine.castVote(fromPeerId, msg.data?.targetPlayerId);
+    } else if (msg.action === 'force_resolve_voting') {
+      this.engine.forceResolveVoting(fromPeerId);
     } else if (msg.action === 'submit_impostor_guess') {
       this.engine.submitImpostorGuess(fromPeerId, msg.data?.guessedName);
     } else if (msg.action === 'update_settings') {

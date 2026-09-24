@@ -382,20 +382,16 @@ export class GameEngine {
     clearTimer(room.code);
     room.state = 'VOTING';
     room.votes = {};
-    room.votingTimeLeft = room.settings.votingTime;
-
-    const interval = setInterval(() => {
-      room.votingTimeLeft -= 1;
-
-      if (room.votingTimeLeft <= 0) {
-        this.resolveVoting(room.code);
-      } else {
-        this.io.to(room.code).emit('voting_timer_tick', { timeLeft: room.votingTimeLeft });
-      }
-    }, 1000);
-
-    roomTimers.set(room.code, interval);
+    room.votingTimeLeft = null; // Sin límite de tiempo: debate libre
     this.broadcastState(room);
+  }
+
+  // Cerrar votación manualmente (solo host)
+  forceResolveVoting(socketId) {
+    const room = this.getRoomByPlayerId(socketId);
+    if (!room || room.state !== 'VOTING') return;
+    if (room.hostId !== socketId) return;
+    this.resolveVoting(room.code);
   }
 
   castVote(socketId, targetPlayerId) {

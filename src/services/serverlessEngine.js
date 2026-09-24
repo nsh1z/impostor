@@ -253,19 +253,14 @@ export class ServerlessEngine {
     clearTimer(this.room.code);
     this.room.state = 'VOTING';
     this.room.votes = {};
-    this.room.votingTimeLeft = this.room.settings.votingTime;
-
-    const timer = setInterval(() => {
-      this.room.votingTimeLeft -= 1;
-      if (this.room.votingTimeLeft <= 0) {
-        this.resolveVoting();
-      } else {
-        if (this.tick) this.tick('voting_timer_tick', { timeLeft: this.room.votingTimeLeft });
-      }
-    }, 1000);
-
-    roomTimers.set(this.room.code, timer);
+    this.room.votingTimeLeft = null; // Sin límite de tiempo: debate libre
     this.broadcastState();
+  }
+
+  forceResolveVoting(playerId) {
+    if (!this.room || this.room.state !== 'VOTING') return;
+    if (this.room.hostId !== playerId) return;
+    this.resolveVoting();
   }
 
   castVote(playerId, targetId) {

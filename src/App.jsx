@@ -109,6 +109,10 @@ export default function App() {
     network.emit('cast_vote', { targetPlayerId });
   };
 
+  const handleForceResolveVoting = () => {
+    network.emit('force_resolve_voting');
+  };
+
   const handleSubmitImpostorGuess = (guessedName) => {
     network.emit('submit_impostor_guess', { guessedName }, (res) => {
       if (res?.error) alert(res.error);
@@ -173,6 +177,7 @@ export default function App() {
           <VotingRound
             gameState={gameState}
             onCastVote={handleCastVote}
+            onForceResolveVoting={handleForceResolveVoting}
           />
         );
 

@@ -250,20 +250,12 @@ export default function Lobby({ gameState, onStartGame, onUpdateProfile, onUpdat
                   </div>
                   <div>
                     <label className="block text-white/50 mb-1 font-mono-sport text-[10px] uppercase">
-                      Tiempo de Votación
+                      Votación
                     </label>
-                    <select
-                      value={gameState?.settings?.votingTime || 40}
-                      onChange={(e) => {
-                        soundFx.click();
-                        onUpdateSettings({ votingTime: Number(e.target.value) });
-                      }}
-                      className="w-full px-2.5 py-1.5 rounded-xl bg-[#0b1410] ring-1 ring-white/10 text-white focus:outline-none"
-                    >
-                      <option value={30}>30 Segundos</option>
-                      <option value={45}>45 Segundos</option>
-                      <option value={60}>60 Segundos</option>
-                    </select>
+                    <div className="w-full px-2.5 py-1.5 rounded-xl bg-[#0b1410] ring-1 ring-[#00ff88]/20 text-[#00ff88] text-[11px] font-mono-sport flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#00ff88] shrink-0" />
+                      <span className="font-semibold truncate">Sin límite (debate)</span>
+                    </div>
                   </div>
                 </div>
 

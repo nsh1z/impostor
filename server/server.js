@@ -148,6 +148,11 @@ io.on('connection', (socket) => {
     if (room) engine.broadcastState(room);
   });
 
+  // FORZAR CIERRE DE VOTACIÓN (HOST)
+  socket.on('force_resolve_voting', () => {
+    engine.forceResolveVoting(socket.id);
+  });
+
   // ADIVINANZA DEL IMPOSTOR
   socket.on('submit_impostor_guess', ({ guessedName }, callback) => {
     const res = engine.submitImpostorGuess(socket.id, guessedName);
